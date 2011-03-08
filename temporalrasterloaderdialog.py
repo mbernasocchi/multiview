@@ -111,7 +111,7 @@ class TemporalRasterLoaderDialog(QDialog):
                     self.printToResult("Layer invalid : "+ layerName + " of " + groupName + " -> ERROR")
              
             #TODO hack to generate the correct groups
-            QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.getLayerID())
+            QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
             self.legend.removeGroup(tmpGroup)   
             #END Hack
             
@@ -120,7 +120,8 @@ class TemporalRasterLoaderDialog(QDialog):
             self.printToResult("Duration: "+ str(endTime - startTime))
         
     def printToResult(self, text):
-           self.ui.results.setText(self.ui.results.toPlainText()+"\n"+ text)
+        self.ui.results.setText(self.ui.results.toPlainText()+"\n"+ text)
+        self.ui.results.verticalScrollBar().setValue(self.ui.results.verticalScrollBar().maximum());
     
     @pyqtSlot()
     def on_loadDataButton_clicked(self):

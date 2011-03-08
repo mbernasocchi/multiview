@@ -28,13 +28,10 @@ from panemitmaptool import PanEmitMapTool
 from ui_multiview import Ui_MultiView
 from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
-hasqwt3d=True
-try:
-    from PyQt4.Qwt3d import *
-    #from scattergramplot import ScattergramPlot
-except:
-    hasqwt3d=False
-    
+#import visualizations
+from rawvaluewidget import RawValueWidget
+from plotwidget import PlotWidget
+from helixwidget import HelixWidget
 
 # create the widget
 class MultiViewWidget(QDialog):
@@ -52,6 +49,13 @@ class MultiViewWidget(QDialog):
         self.mapTool = self.mapCanvas.mapTool()
         self.proj = QgsProject.instance()
         self.parent = parent 
+        
+        #create visualizations tabs
+        self.visualizations = [PlotWidget(), HelixWidget(), RawValueWidget()]
+        for v in self.visualizations:
+            self.ui.visualizations.addTab(v, v.name())
+        self.selectedVisualization = self.visualizations[0] 
+        QObject.connect(self.ui.visualizations, SIGNAL("currentChanged ( int )"), self.updateSelectedVisualization)
         
         #init the coordinate
         self.coords = None
@@ -95,7 +99,7 @@ class MultiViewWidget(QDialog):
         print str(text)
         
     def updateMultiVariables(self, button):
-    #TODO this assumes unique layerGroup names
+        #TODO this assumes unique layerGroup names
         varName = button.text()
         #variable has been turned ON
         
@@ -114,12 +118,11 @@ class MultiViewWidget(QDialog):
     
     def redraw(self):
         if self.coords is None:
-            self.ui.display.setText("Please click on the map canvas to select coordinates")
+            self.ui.rawValuesDisplay.setText("Please click on the map canvas to select coordinates")
         elif len(self.activatedVariables) is 0:
-            self.ui.display.setText("please select at least a variable")
+            self.ui.rawValuesDisplay.setText("please select at least a variable")
         else:
-#            QMessageBox.information(self, "Drawing", str(self.activatedVariables) + "\nAt: "+str(self.coords))
-             self.ui.display.setText(str(self.drill()))
+            self.selectedVisualization.redraw(self.drill())
         
     def drill(self):
         values = {}
@@ -190,7 +193,6 @@ class MultiViewWidget(QDialog):
                 self.ui.availableVariables.addWidget(b)
                 
     def hasTemporalRasters(self, layersGroupName):
-        #TODO check for bugs
         #checks if a layer group contains rasters that have the customProperty("isTemporalRaster") set to True
         groups = self.legend.groupLayerRelationship()
         for group in groups:
@@ -219,8 +221,11 @@ class MultiViewWidget(QDialog):
         point.y() < extent.yMaximum()
     
     def resetCoords(self):
-          self.ui.display.setText("")
+          self.selectedVisualization.reset()
     
+    def updateSelectedVisualization(self, index):
+        self.selectedVisualization = self.visualizations[index]
+            
     @pyqtSlot(bool)
     def on_trackMouseMove_toggled(self, active):
         self.resetCoords()
@@ -260,8 +265,8 @@ class MultiViewWidget(QDialog):
         if result == 1:
 #            # do something useful (delete the line containing pass and
 #            # substitute with your code
-            print "oii"
-        
+            pass
+                
     @pyqtSlot()
     def on_closeButton_clicked(self):
         self.close()            
