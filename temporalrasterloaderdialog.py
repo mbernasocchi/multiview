@@ -25,13 +25,13 @@ from qgis.gui import *
 from datetime import datetime
 import re
 
-from ui_temporalrasterloader import Ui_TemporalRasterLoader
+from ui_temporalrasterloaderdialog import Ui_TemporalRasterLoaderDialog
 # create the dialog for zoom to point
 class TemporalRasterLoaderDialog(QDialog):
     def __init__(self, iface):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
-        self.ui = Ui_TemporalRasterLoader()
+        self.ui = Ui_TemporalRasterLoaderDialog()
         self.ui.setupUi(self)
         self.setWindowTitle("MultiView - Temporal Raster Loader")
         

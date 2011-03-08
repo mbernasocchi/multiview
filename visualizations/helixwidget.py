@@ -28,7 +28,7 @@ except:
     hasqwt3d=False
 
 # create the dialog for zoom to point
-class HelixWidget(QDialog):
+class HelixWidget(QWidget):
     def __init__(self):
         QDialog.__init__(self)
         # Set up the user interface from Designer.

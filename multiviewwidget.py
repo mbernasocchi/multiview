@@ -29,9 +29,9 @@ from ui_multiview import Ui_MultiView
 from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
 #import visualizations
-from rawvaluewidget import RawValueWidget
-from plotwidget import PlotWidget
-from helixwidget import HelixWidget
+from visualizations.rawvaluewidget import RawValueWidget
+from visualizations.plotwidget import PlotWidget
+from visualizations.helixwidget import HelixWidget
 
 # create the widget
 class MultiViewWidget(QDialog):
@@ -50,7 +50,7 @@ class MultiViewWidget(QDialog):
         self.proj = QgsProject.instance()
         self.parent = parent 
         
-        #create visualizations tabs
+        #create visualizations
         self.visualizations = [PlotWidget(), HelixWidget(), RawValueWidget()]
         for v in self.visualizations:
             self.ui.visualizations.addTab(v, v.name())

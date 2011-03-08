@@ -19,33 +19,48 @@
 
 # Makefile for a PyQGIS plugin 
 
-PLUGINNAME = multiview
+UI_PATH=.
+UI_SOURCES=$(wildcard $(UI_PATH)/*.ui) $(wildcard $(UI_PATH)/*.ui)
+UI_FILES=$(patsubst $(UI_PATH)/%.ui, $(UI_PATH)/%.py, $(UI_SOURCES))
 
-PY_FILES = multiview.py multiviewwidget.py temporalrasterloader.py temporalrasterloaderdialog.py __init__.py
+VIS_UI_PATH=visualizations
+VIS_UI_SOURCES=$(wildcard $(VIS_UI_PATH)/*.ui) $(wildcard $(VIS_UI_PATH)/*.ui)
+VIS_UI_FILES=$(patsubst $(VIS_UI_PATH)/%.ui, $(VIS_UI_PATH)/%.py, $(VIS_UI_SOURCES))
 
-EXTRAS = icon.png 
+LANG_PATH=i18n
+LANG_SOURCES=$(wildcard $(LANG_PATH)/*.ts)
+LANG_FILES=$(patsubst $(LANG_PATH)/%.ts, $(LANG_PATH)/%.qm, $(LANG_SOURCES))
 
-UI_FILES = ui_multiview.py ui_temporalrasterloader.py
+RES_PATH=
+RES_SOURCES=$(wildcard $(RES_PATH)/*.qrc)
+RES_FILES=$(patsubst $(LANG_PATH)/%.qrc, $(LANG_PATH)/%_rc.py, $(RES_SOURCES))
 
-RESOURCE_FILES = resources.py
+ALL_FILES= ${RES_FILES} ${UI_FILES} ${VIS_UI_FILES} ${LANG_FILES}
 
-default: compile
+all: $(ALL_FILES)
 
-compile: $(UI_FILES) $(RESOURCE_FILES)
+ui: $(UI_FILES)
 
-%.py : %.qrc
-	pyrcc4 -o $@  $<
+lang: $(LANG_FILES)
 
-%.py : %.ui
+res: $(RES_FILES)
+
+
+$(UI_FILES): $(UI_PATH)/%.py: $(UI_PATH)/%.ui
 	pyuic4 -o $@ $<
 
-# The deploy  target only works on unix like operating system where
-# the Python plugin directory is located at:
-# $HOME/.qgis/python/plugins
-deploy: compile
-	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+$(VIS_UI_FILES): $(VIS_UI_PATH)/%.py: $(VIS_UI_PATH)/%.ui
+	pyuic4 -o $@ $<
 
+$(LANG_FILES): $(LANG_PATH)/%.qm: $(LANG_PATH)/%.ts
+	lrelease $< 
+
+$(RES_FILES): $(RES_PATH)/%_rc.py: $(RES_PATH)/%.qrc
+	pyrcc4 -o $@ $<
+
+
+clean:
+	rm -f $(ALL_FILES)
+
+package:
+	cd .. && rm -f GdalTools.zip && zip -r GdalTools.zip GdalTools -x \*.svn* -x \*.pyc -x \*~ -x \*entries\* -x \*.git\*

@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_temporalrasterloader.ui'
+# Form implementation generated from reading ui file 'ui_temporalrasterloaderdialog.ui'
 #
-# Created: Tue Mar  8 16:31:45 2011
+# Created: Tue Mar  8 22:28:20 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 
-class Ui_TemporalRasterLoader(object):
-    def setupUi(self, TemporalRasterLoader):
-        TemporalRasterLoader.setObjectName("TemporalRasterLoader")
-        TemporalRasterLoader.resize(673, 295)
-        self.verticalLayoutWidget = QtGui.QWidget(TemporalRasterLoader)
+class Ui_TemporalRasterLoaderDialog(object):
+    def setupUi(self, TemporalRasterLoaderDialog):
+        TemporalRasterLoaderDialog.setObjectName("TemporalRasterLoaderDialog")
+        TemporalRasterLoaderDialog.resize(673, 295)
+        self.verticalLayoutWidget = QtGui.QWidget(TemporalRasterLoaderDialog)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 671, 291))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
@@ -64,15 +64,15 @@ class Ui_TemporalRasterLoader(object):
         self.horizontalLayout_4.addWidget(self.closeButton)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.retranslateUi(TemporalRasterLoader)
-        QtCore.QMetaObject.connectSlotsByName(TemporalRasterLoader)
+        self.retranslateUi(TemporalRasterLoaderDialog)
+        QtCore.QMetaObject.connectSlotsByName(TemporalRasterLoaderDialog)
 
-    def retranslateUi(self, TemporalRasterLoader):
-        TemporalRasterLoader.setWindowTitle(QtGui.QApplication.translate("TemporalRasterLoader", "TemporalRasterLoader", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("TemporalRasterLoader", "Temporal RE:", None, QtGui.QApplication.UnicodeUTF8))
-        self.temporalRegEx.setText(QtGui.QApplication.translate("TemporalRasterLoader", "N\\d\\d\\d\\d", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("TemporalRasterLoader", "Interval RE:", None, QtGui.QApplication.UnicodeUTF8))
-        self.intervalRegEx.setText(QtGui.QApplication.translate("TemporalRasterLoader", "S\\d\\d\\d\\d", None, QtGui.QApplication.UnicodeUTF8))
-        self.loadDataButton.setText(QtGui.QApplication.translate("TemporalRasterLoader", "Choose and Load", None, QtGui.QApplication.UnicodeUTF8))
-        self.closeButton.setText(QtGui.QApplication.translate("TemporalRasterLoader", "Close", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, TemporalRasterLoaderDialog):
+        TemporalRasterLoaderDialog.setWindowTitle(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "TemporalRasterLoader", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Temporal RE:", None, QtGui.QApplication.UnicodeUTF8))
+        self.temporalRegEx.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "N\\d\\d\\d\\d", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Interval RE:", None, QtGui.QApplication.UnicodeUTF8))
+        self.intervalRegEx.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "S\\d\\d\\d\\d", None, QtGui.QApplication.UnicodeUTF8))
+        self.loadDataButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Choose and Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.closeButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

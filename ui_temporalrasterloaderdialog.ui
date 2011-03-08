@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TemporalRasterLoader</class>
- <widget class="QDialog" name="TemporalRasterLoader">
+ <class>TemporalRasterLoaderDialog</class>
+ <widget class="QDialog" name="TemporalRasterLoaderDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

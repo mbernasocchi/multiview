@@ -30,7 +30,7 @@ except:
 
 
 # create the dialog for zoom to point
-class PlotWidget(QDialog):
+class PlotWidget(QWidget):
     def __init__(self):
         QDialog.__init__(self)
         # Set up the user interface from Designer.

@@ -1,0 +1,1 @@
+To implement a new visualization create a new widget like the other visualizations and instantiate it in MultiViewWidget.__init__
