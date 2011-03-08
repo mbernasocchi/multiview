@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/helixview" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
