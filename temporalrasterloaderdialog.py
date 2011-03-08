@@ -53,7 +53,7 @@ class TemporalRasterLoaderDialog(QDialog):
             
             i = 0.0
             startTime = datetime.now()
-            self.printToResult("NEW IMPORT RUN\nStart: "+ str(startTime))
+            self.printToResult("NEW IMPORT RUN\nStart: " + str(startTime))
             
             #re for the temporal format
             temporalSearchPattern = re.compile(str(self.ui.temporalRegEx.text()))
@@ -64,7 +64,7 @@ class TemporalRasterLoaderDialog(QDialog):
             
             for filePath in self.files:
                 i += 1
-                self.ui.progressBar.setValue(i/filesCount*100)
+                self.ui.progressBar.setValue(i / filesCount * 100)
                 fileBaseName = QFileInfo(filePath).baseName()
                 
                 #look for search pattern in filename
@@ -74,7 +74,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 intervalInfo = fileNameInfo.group()
                 variableInfo = str(fileBaseName).replace(temporalInfo, '').replace(intervalInfo, '')
                 
-                groupName = variableInfo+intervalInfo
+                groupName = variableInfo + intervalInfo
                 layerName = onlyDigits.sub('', str(temporalInfo))
 
                 #check if new group is needed
@@ -90,7 +90,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 if layer.isValid():
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
-                    self.printToResult("Adding : "+ fileBaseName + " -> " + layerWasAdded)
+                    self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
                     
                     #get the current group index
                     groups = []
@@ -104,11 +104,11 @@ class TemporalRasterLoaderDialog(QDialog):
                     
                     if self.legend.groupExists(groupIndex):
                         self.legend.moveLayer(layer, groupIndex)
-                        self.printToResult("Moving : " +fileBaseName + " to " + groupName + "(i "+str(groupIndex)+")/"+ layerName +" -> " + layerWasAdded)
+                        self.printToResult("Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
                     else:
-                        self.printToResult("NOT Moving : " +fileBaseName + " to " + groupName + "(i "+str(groupIndex)+")/"+ layerName +" -> " + layerWasAdded)
+                        self.printToResult("NOT Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
                 else:
-                    self.printToResult("Layer invalid : "+ layerName + " of " + groupName + " -> ERROR")
+                    self.printToResult("Layer invalid : " + layerName + " of " + groupName + " -> ERROR")
              
             #TODO hack to generate the correct groups
             QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
@@ -116,11 +116,11 @@ class TemporalRasterLoaderDialog(QDialog):
             #END Hack
             
             endTime = datetime.now()
-            self.printToResult("End: "+ str(endTime))
-            self.printToResult("Duration: "+ str(endTime - startTime))
+            self.printToResult("End: " + str(endTime))
+            self.printToResult("Duration: " + str(endTime - startTime))
         
     def printToResult(self, text):
-        self.ui.results.setText(self.ui.results.toPlainText()+"\n"+ text)
+        self.ui.results.setText(self.ui.results.toPlainText() + "\n" + text)
         self.ui.results.verticalScrollBar().setValue(self.ui.results.verticalScrollBar().maximum());
     
     @pyqtSlot()

@@ -47,13 +47,13 @@ class MultiView:
         self.iface.addPluginToMenu("&MultiView", self.action)
         
         #clear plugin projects settings when a new project is loaded
-        QObject.connect(self.iface, SIGNAL("projectRead()"), self.removeProjectSettings )
-        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.removeProjectSettings )
+        QObject.connect(self.iface, SIGNAL("projectRead()"), self.removeProjectSettings)
+        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.removeProjectSettings)
         self.removeProjectSettings()
         
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&MultiView",self.action)
+        self.iface.removePluginMenu("&MultiView", self.action)
         self.iface.removeToolBarIcon(self.action)
         
         #TODO, is it necessary to disconnect signals

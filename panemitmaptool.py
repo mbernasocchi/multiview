@@ -30,10 +30,10 @@ from qgis.gui import *
 
 
 class PanEmitMapTool(QgsMapToolPan):
-    def __init__(self,canvas):
-        QgsMapToolPan.__init__( self,canvas ) 
+    def __init__(self, canvas):
+        QgsMapToolPan.__init__(self, canvas) 
         self.cursor = QCursor(Qt.ArrowCursor)
 
-    def canvasPressEvent( self, e ):
-        point = self.toMapCoordinates( e.pos() )
-        self.emit( SIGNAL( "canvasClicked" ), point, e.button() )
+    def canvasPressEvent(self, e):
+        point = self.toMapCoordinates(e.pos())
+        self.emit(SIGNAL("canvasClicked"), point, e.button())

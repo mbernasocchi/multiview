@@ -21,11 +21,11 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-hasqwt=True
+hasqwt = True
 try:
     from PyQt4.Qwt5 import *
 except:
-    hasqwt=False
+    hasqwt = False
     
 
 

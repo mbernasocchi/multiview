@@ -61,15 +61,15 @@ class MultiViewWidget(QDialog):
         self.coords = None
         
         #get the globe plug-in instance
-        self.globe = self.mainWindow.findChild( QObject, "globePlugin" )
+        self.globe = self.mainWindow.findChild(QObject, "globePlugin")
         
         #create the maptool
         self.previousMapTool = self.mapCanvas.mapTool();
         self.previousCursor = self.mapCanvas.cursor();
         self.mapTool = PanEmitMapTool(self.mapCanvas)
-        self.mapCanvas.setMapTool( self.mapTool )
+        self.mapCanvas.setMapTool(self.mapTool)
         self.mapCanvas.setCursor(self.mapTool.cursor)
-        self.ui.trackRightClick.setChecked ( True )
+        self.ui.trackRightClick.setChecked (True)
         
         #create the available variables checkbox group
         self.ui.availableVariablesGroup = QButtonGroup()
@@ -81,8 +81,8 @@ class MultiViewWidget(QDialog):
         #update the variable list if layers or groups are changed or a new project is loaded
         QObject.connect(self.mapCanvas, SIGNAL("layersChanged()"), self.updateAvailableVariables)
         QObject.connect(self.legend, SIGNAL("groupIndexChanged( int, int )"), self.updateAvailableVariables)
-        QObject.connect(self.iface, SIGNAL("projectRead()"), self.updateAvailableVariables )
-        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.updateAvailableVariables )
+        QObject.connect(self.iface, SIGNAL("projectRead()"), self.updateAvailableVariables)
+        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.updateAvailableVariables)
         
         #a layer has been clicked
         QObject.connect(self.ui.availableVariablesGroup, SIGNAL("buttonClicked( QAbstractButton * )"), self.updateMultiVariables)
@@ -90,10 +90,10 @@ class MultiViewWidget(QDialog):
     #runs just before the widget is closed
     def closeEvent(self, event):
         self.saveProjectActivatedVariables()
-        self.mapCanvas.setMapTool( self.previousMapTool )
-        self.mapCanvas.setCursor( self.previousCursor )    
+        self.mapCanvas.setMapTool(self.previousMapTool)
+        self.mapCanvas.setCursor(self.previousCursor)    
              
-    def test(self,title,text):
+    def test(self, title, text):
         QMessageBox.information(self.mainWindow, str(title), str(text))
         print "TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST"
         print str(text)
@@ -112,8 +112,8 @@ class MultiViewWidget(QDialog):
             try:
                 self.activatedVariables.remove(varName)
             except:
-                QMessageBox.warning(self.mainWindow, "Turn OFF exception", 
-                    "It seems that you have layers that have not unique names [layername: "+varName+"]")
+                QMessageBox.warning(self.mainWindow, "Turn OFF exception",
+                    "It seems that you have layers that have not unique names [layername: " + varName + "]")
         self.redraw()
     
     def redraw(self):
@@ -144,8 +144,8 @@ class MultiViewWidget(QDialog):
                         and layer.rasterType() == QgsRasterLayer.GrayOrUndefined:
                         
                         extent = layer.extent()
-                        if self.pointInExtent( self.coords, extent ):
-                            ident = layer.identify( self.coords )
+                        if self.pointInExtent(self.coords, extent):
+                            ident = layer.identify(self.coords)
                             time = int(layer.name())
                             value = float(ident[1].values()[0])
                             groupValues[time] = value
@@ -239,15 +239,15 @@ class MultiViewWidget(QDialog):
         self.resetCoords()
         if active:
             #connecting to a python emitted signal is different
-            QObject.connect(self.mapTool, SIGNAL("canvasClicked" ), self.updateCoordsMouse )
+            QObject.connect(self.mapTool, SIGNAL("canvasClicked"), self.updateCoordsMouse)
             try:
-                QObject.connect(self.globe, SIGNAL( "newCoordinatesSelected( QgsPoint )"), self.updateCoords )
+                QObject.connect(self.globe, SIGNAL("newCoordinatesSelected( QgsPoint )"), self.updateCoords)
             except:
                 pass
         else:
-            QObject.disconnect(self.mapTool, SIGNAL("canvasClicked" ), self.updateCoordsMouse )
+            QObject.disconnect(self.mapTool, SIGNAL("canvasClicked"), self.updateCoordsMouse)
             try:
-                QObject.disconnect(self.globe, SIGNAL( "newCoordinatesSelected( QgsPoint )"), self.updateCoords )
+                QObject.disconnect(self.globe, SIGNAL("newCoordinatesSelected( QgsPoint )"), self.updateCoords)
             except:
                 pass
     

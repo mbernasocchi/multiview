@@ -21,11 +21,11 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-hasqwt3d=True
+hasqwt3d = True
 try:
     from PyQt4.Qwt3d import *
 except:
-    hasqwt3d=False
+    hasqwt3d = False
 
 # create the dialog for zoom to point
 class HelixWidget(QWidget):
