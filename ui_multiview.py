@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Tue Mar  8 22:28:20 2011
+# Created: Wed Mar  9 01:23:51 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,9 +13,9 @@ class Ui_MultiView(object):
     def setupUi(self, MultiView):
         MultiView.setObjectName("MultiView")
         MultiView.setWindowModality(QtCore.Qt.NonModal)
-        MultiView.resize(794, 370)
+        MultiView.resize(794, 391)
         self.layoutWidget = QtGui.QWidget(MultiView)
-        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 791, 341))
+        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 791, 351))
         self.layoutWidget.setObjectName("layoutWidget")
         self.horizontalLayout = QtGui.QHBoxLayout(self.layoutWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -38,7 +38,7 @@ class Ui_MultiView(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget(self.scrollArea)
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 388, 119))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 388, 124))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -66,7 +66,7 @@ class Ui_MultiView(object):
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayoutWidget_2 = QtGui.QWidget(self.groupBox)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(0, 20, 211, 52))
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(0, 20, 131, 75))
         self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
         self.verticalLayout = QtGui.QVBoxLayout(self.horizontalLayoutWidget_2)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -86,14 +86,28 @@ class Ui_MultiView(object):
         self.visualizations.setSizePolicy(sizePolicy)
         self.visualizations.setObjectName("visualizations")
         self.horizontalLayout.addWidget(self.visualizations)
-        self.closeButton = QtGui.QPushButton(MultiView)
-        self.closeButton.setGeometry(QtCore.QRect(600, 340, 191, 27))
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        self.horizontalLayoutWidget = QtGui.QWidget(MultiView)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 340, 791, 51))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.warningDisplay = QtGui.QLabel(self.horizontalLayoutWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.warningDisplay.sizePolicy().hasHeightForWidth())
+        self.warningDisplay.setSizePolicy(sizePolicy)
+        self.warningDisplay.setText("")
+        self.warningDisplay.setObjectName("warningDisplay")
+        self.horizontalLayout_3.addWidget(self.warningDisplay)
+        self.closeButton = QtGui.QPushButton(self.horizontalLayoutWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.closeButton.sizePolicy().hasHeightForWidth())
         self.closeButton.setSizePolicy(sizePolicy)
         self.closeButton.setObjectName("closeButton")
+        self.horizontalLayout_3.addWidget(self.closeButton)
 
         self.retranslateUi(MultiView)
         self.visualizations.setCurrentIndex(-1)

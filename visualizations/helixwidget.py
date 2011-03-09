@@ -26,12 +26,16 @@ try:
     from PyQt4.Qwt3d import *
 except:
     hasqwt3d = False
+    
+from ui_helixwidget import Ui_HelixWidget
 
 # create the dialog for zoom to point
 class HelixWidget(QWidget):
     def __init__(self):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
+        self.ui = Ui_HelixWidget()
+        self.ui.setupUi(self)
     
     def name(self):
         return "Helix"

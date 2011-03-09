@@ -77,7 +77,6 @@ class MultiViewWidget(QDialog):
         self.readProjectActivatedVariables()
         self.updateAvailableVariables()
         
-        
         #update the variable list if layers or groups are changed or a new project is loaded
         QObject.connect(self.mapCanvas, SIGNAL("layersChanged()"), self.updateAvailableVariables)
         QObject.connect(self.legend, SIGNAL("groupIndexChanged( int, int )"), self.updateAvailableVariables)
@@ -86,6 +85,8 @@ class MultiViewWidget(QDialog):
         
         #a layer has been clicked
         QObject.connect(self.ui.availableVariablesGroup, SIGNAL("buttonClicked( QAbstractButton * )"), self.updateMultiVariables)
+        
+        self.redraw()
     
     #runs just before the widget is closed
     def closeEvent(self, event):
@@ -117,11 +118,12 @@ class MultiViewWidget(QDialog):
         self.redraw()
     
     def redraw(self):
-        if self.coords is None:
-            self.ui.rawValuesDisplay.setText("Please click on the map canvas to select coordinates")
-        elif len(self.activatedVariables) is 0:
-            self.ui.rawValuesDisplay.setText("please select at least a variable")
+        if len(self.activatedVariables) is 0:
+            self.ui.warningDisplay.setText("<font color='red'>please select at least a variable</font>")
+        elif self.coords is None:
+            self.ui.warningDisplay.setText("<font color='red'>Please click on the map canvas to select coordinates</font>")
         else:
+            self.ui.warningDisplay.setText("")
             self.selectedVisualization.redraw(self.drill())
         
     def drill(self):
@@ -151,7 +153,7 @@ class MultiViewWidget(QDialog):
                             groupValues[time] = value
                 values[groupName] = groupValues
              
-        return str(values)
+        return values
 
     def readProjectActivatedVariables(self):
         #init the activated variables list
@@ -185,8 +187,10 @@ class MultiViewWidget(QDialog):
         #add the updated checkboxes
         for layerGroupName in self.legend.groups():
             if self.hasTemporalRasters(layerGroupName):
-#            QMessageBox.warning(self, "No variables selected", layerGroupName+" "+str(i)+" "+str(self.legend.isGroupVisible(i))) 
+                #plt = QPalette()
+                #plt.setColor(QPalette.WindowText, Qt.red);
                 b = QCheckBox(layerGroupName)
+                #b.setPalette(plt);
                 self.ui.availableVariablesGroup.addButton(b)
                 isOn = layerGroupName in self.activatedVariables 
                 b.setChecked(bool(isOn))
