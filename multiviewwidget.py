@@ -74,8 +74,14 @@ class MultiViewWidget(QDialog):
         #create the available variables checkbox group
         self.ui.availableVariablesGroup = QButtonGroup()
         self.ui.availableVariablesGroup.setExclusive(False)
-        self.readProjectActivatedVariables()
+#        self.readProjectActivatedVariables()
+        self.activatedVariables = []
         self.updateAvailableVariables()
+        
+        #clear plugin projects settings when a new project is loaded
+#        QObject.connect(self.iface, SIGNAL("projectRead()"), self.removeProjectSettings)
+#        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.removeProjectSettings)
+#        self.removeProjectSettings()
         
         #update the variable list if layers or groups are changed or a new project is loaded
         QObject.connect(self.mapCanvas, SIGNAL("layersChanged()"), self.refreshAll)
@@ -90,7 +96,7 @@ class MultiViewWidget(QDialog):
     
     #runs just before the widget is closed
     def closeEvent(self, event):
-        self.saveProjectActivatedVariables()
+#        self.saveProjectActivatedVariables()
         self.mapCanvas.setMapTool(self.previousMapTool)
         self.mapCanvas.setCursor(self.previousCursor)    
              
@@ -155,25 +161,30 @@ class MultiViewWidget(QDialog):
              
         return values
 
-    def readProjectActivatedVariables(self):
-        #init the activated variables list
-        try:
-            self.activatedVariables = self.parent.activatedVariables
-        except:
-            self.activatedVariables = []
-            try:
-               for v in self.proj.readListEntry("MultiView", "activatedVariables")[0]:
-                   if v in self.legend.groups():
-                       self.activatedVariables.append(v)
-            except:
-                pass
-        #self.test("readEnd",self.activatedVariables)
-        
-    def saveProjectActivatedVariables(self):
-        # store values
-        self.parent.activatedVariables = self.activatedVariables
-        self.proj.writeEntry("MultiView", "activatedVariables ", self.activatedVariables)
-     
+#    def readProjectActivatedVariables(self):
+#        #init the activated variables list
+#        try:
+#            self.activatedVariables = self.parent.activatedVariables
+#        except:
+#            self.activatedVariables = []
+#            try:
+#               for v in self.proj.readListEntry("MultiView", "activatedVariables")[0]:
+#                   if v in self.legend.groups():
+#                       self.activatedVariables.append(v)
+#            except:
+#                pass
+#        #self.test("readEnd",self.activatedVariables)
+#        
+#    def saveProjectActivatedVariables(self):
+#        # store values
+#        self.proj.writeEntry("MultiView", "activatedVariables ", self.activatedVariables)
+#     
+#    def removeProjectSettings(self):
+#        try:
+#            del self.activatedVariables
+#        except:
+#            pass
+    
     def refreshAll(self):
         self.updateAvailableVariables()
         self.selectedVisualization.reset()

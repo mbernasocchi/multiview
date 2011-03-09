@@ -46,19 +46,10 @@ class MultiView:
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu("&MultiView", self.action)
         
-        #clear plugin projects settings when a new project is loaded
-        QObject.connect(self.iface, SIGNAL("projectRead()"), self.removeProjectSettings)
-        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.removeProjectSettings)
-        self.removeProjectSettings()
-        
     def unload(self):
         # Remove the plugin menu item and icon
         self.iface.removePluginMenu("&MultiView", self.action)
         self.iface.removeToolBarIcon(self.action)
-        
-        #TODO, is it necessary to disconnect signals
-        #QObject.disconnect(self.iface, SIGNAL("projectRead()"), self.removeProjectSettings )
-        #QObject.disconnect(self.iface, SIGNAL("newProjectCreated()"), self.removeProjectSettings )
         
         try:
             self.multiviewwidget.temporalRasterLoader.close()
@@ -72,10 +63,3 @@ class MultiView:
         self.multiviewwidget = MultiViewWidget(self.iface, self)
         # show the widget
         self.multiviewwidget.show()
-    
-    def removeProjectSettings(self):
-        try:
-            del self.activatedVariables
-        except:
-            pass
-

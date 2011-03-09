@@ -44,7 +44,6 @@ class PCPWidget(QWidget):
     def redraw(self, valuesArray):
         self.reset()
         #add curves
-        numVars = len(valuesArray)
         for (layerGroupName, values) in valuesArray.iteritems():
             color = self.main.colors[QString(layerGroupName)]
             curve = QwtPlotCurve(layerGroupName)
