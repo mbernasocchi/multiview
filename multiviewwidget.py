@@ -30,7 +30,7 @@ from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
 #import visualizations
 from visualizations.rawvaluewidget import RawValueWidget
-from visualizations.plotwidget import PlotWidget
+from visualizations.pcpwidget import PCPWidget
 from visualizations.helixwidget import HelixWidget
 
 # create the widget
@@ -51,7 +51,7 @@ class MultiViewWidget(QDialog):
         self.parent = parent 
         
         #create visualizations
-        self.visualizations = [PlotWidget(), HelixWidget(), RawValueWidget()]
+        self.visualizations = [PCPWidget(self), HelixWidget(self), RawValueWidget(self)]
         for v in self.visualizations:
             self.ui.visualizations.addTab(v, v.name())
         self.selectedVisualization = self.visualizations[0] 
@@ -78,10 +78,10 @@ class MultiViewWidget(QDialog):
         self.updateAvailableVariables()
         
         #update the variable list if layers or groups are changed or a new project is loaded
-        QObject.connect(self.mapCanvas, SIGNAL("layersChanged()"), self.updateAvailableVariables)
-        QObject.connect(self.legend, SIGNAL("groupIndexChanged( int, int )"), self.updateAvailableVariables)
-        QObject.connect(self.iface, SIGNAL("projectRead()"), self.updateAvailableVariables)
-        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.updateAvailableVariables)
+        QObject.connect(self.mapCanvas, SIGNAL("layersChanged()"), self.refreshAll)
+        QObject.connect(self.legend, SIGNAL("groupIndexChanged( int, int )"), self.refreshAll)
+        QObject.connect(self.iface, SIGNAL("projectRead()"), self.refreshAll)
+        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.refreshAll)
         
         #a layer has been clicked
         QObject.connect(self.ui.availableVariablesGroup, SIGNAL("buttonClicked( QAbstractButton * )"), self.updateMultiVariables)
@@ -120,8 +120,10 @@ class MultiViewWidget(QDialog):
     def redraw(self):
         if len(self.activatedVariables) is 0:
             self.ui.warningDisplay.setText("<font color='red'>please select at least a variable</font>")
+            self.selectedVisualization.reset()
         elif self.coords is None:
             self.ui.warningDisplay.setText("<font color='red'>Please click on the map canvas to select coordinates</font>")
+            self.selectedVisualization.reset()
         else:
             self.ui.warningDisplay.setText("")
             self.selectedVisualization.redraw(self.drill())
@@ -129,8 +131,6 @@ class MultiViewWidget(QDialog):
     def drill(self):
         values = {}
         groups = self.legend.groupLayerRelationship()
-        #return str(groups)
-        #for layer in self.legend.layers(): 
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
@@ -174,7 +174,14 @@ class MultiViewWidget(QDialog):
         self.parent.activatedVariables = self.activatedVariables
         self.proj.writeEntry("MultiView", "activatedVariables ", self.activatedVariables)
      
+    def refreshAll(self):
+        self.updateAvailableVariables()
+        self.selectedVisualization.reset()
+        
     def updateAvailableVariables(self):
+        #clear the colors dictionary
+        self.colors = {}
+
         #remove the old checkboxes
         try:
             for b in self.ui.availableVariablesGroup.buttons():
@@ -185,17 +192,39 @@ class MultiViewWidget(QDialog):
             pass
 
         #add the updated checkboxes
+        i = 0
+        #TODO better solution
+        maxColors = 10
         for layerGroupName in self.legend.groups():
+            layerGroupName = layerGroupName
             if self.hasTemporalRasters(layerGroupName):
-                #plt = QPalette()
-                #plt.setColor(QPalette.WindowText, Qt.red);
-                b = QCheckBox(layerGroupName)
-                #b.setPalette(plt);
-                self.ui.availableVariablesGroup.addButton(b)
+                #create a legend color
+                self.colors[layerGroupName] = QColor.fromHsv( int(360 / maxColors * i), 255, 255 )
+                #create the checkbox
+                cb = QCheckBox(layerGroupName)
+                self.ui.availableVariablesGroup.addButton(cb)
                 isOn = layerGroupName in self.activatedVariables 
-                b.setChecked(bool(isOn))
-                self.ui.availableVariables.addWidget(b)
+                cb.setChecked(bool(isOn))
+                #color the checkbox
+                cb.setStyleSheet("background-color: rgb(" + str(self.colors[layerGroupName].red()) + ", " 
+                                + str(self.colors[layerGroupName].green()) + ", " + str(self.colors[layerGroupName].blue()) + ");\n")
+                self.ui.availableVariables.addWidget(cb)
+                i += 1
                 
+    def updateSelectedVisualization(self, index):
+        self.selectedVisualization = self.visualizations[index]
+    
+    def resetCoords(self):
+          self.selectedVisualization.reset()
+    
+    def updateCoords(self, coords):
+        self.coords = coords
+        self.redraw()
+    
+    def updateCoordsMouse(self, point, mouseButton):
+        if mouseButton == Qt.RightButton:
+            self.updateCoords(point)
+  
     def hasTemporalRasters(self, layersGroupName):
         #checks if a layer group contains rasters that have the customProperty("isTemporalRaster") set to True
         groups = self.legend.groupLayerRelationship()
@@ -208,14 +237,6 @@ class MultiViewWidget(QDialog):
                     if layer and layer.customProperty("isTemporalRaster", False).toBool():
                         return True
         return False
-    
-    def updateCoords(self, coords):
-        self.coords = coords
-        self.redraw()
-    
-    def updateCoordsMouse(self, point, mouseButton):
-        if mouseButton == Qt.RightButton:
-            self.updateCoords(point)
   
     def pointInExtent(self, point, extent):
         return \
@@ -224,12 +245,6 @@ class MultiViewWidget(QDialog):
         point.y() > extent.yMinimum() and \
         point.y() < extent.yMaximum()
     
-    def resetCoords(self):
-          self.selectedVisualization.reset()
-    
-    def updateSelectedVisualization(self, index):
-        self.selectedVisualization = self.visualizations[index]
-            
     @pyqtSlot(bool)
     def on_trackMouseMove_toggled(self, active):
         self.resetCoords()

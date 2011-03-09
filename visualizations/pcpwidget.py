@@ -1,6 +1,6 @@
 """
 /***************************************************************************
- PlotWidget - shows the values as xy plots
+ PCPWidget - shows the values as Parallel Coordinates Plot
                                  A QGIS plugin
                              -------------------
         begin                : 2011-01-02
@@ -27,32 +27,31 @@ try:
 except:
     hasqwt = False
     
-from ui_plotwidget import Ui_PlotWidget
+from ui_pcpwidget import Ui_PCPWidget
 
 # create the dialog for zoom to point
-class PlotWidget(QWidget):
-    def __init__(self):
+class PCPWidget(QWidget):
+    def __init__(self, main):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
-        self.ui = Ui_PlotWidget()
+        self.ui = Ui_PCPWidget()
         self.ui.setupUi(self)
+        self.main = main
     
     def name(self):
-        return "Plot"
+        return "PCP"
     
     def redraw(self, valuesArray):
         self.reset()
         #add curves
         numVars = len(valuesArray)
-        i = 0
-        for (var, values) in valuesArray.iteritems():
-            curve = QwtPlotCurve(var)
-            curve.setStyle(QwtPlotCurve.Lines)
-            color = QColor.fromHsv( int(360 / numVars * i), 255, 255 )
+        for (layerGroupName, values) in valuesArray.iteritems():
+            color = self.main.colors[QString(layerGroupName)]
+            curve = QwtPlotCurve(layerGroupName)
+            curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
             curve.setPen(QPen(color))
             curve.setData(values.keys(), values.values())
             curve.attach(self.ui.qwtPlot)
-            i +=1
         #finally, refresh the plot
         self.ui.qwtPlot.replot()
         
