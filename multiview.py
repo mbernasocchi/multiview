@@ -44,11 +44,11 @@ class MultiView:
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu("&MultiView", self.action)
+        self.iface.addPluginToMenu("&Analyses", self.action)
         
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&MultiView", self.action)
+        self.iface.removePluginMenu("&Analyses", self.action)
         self.iface.removeToolBarIcon(self.action)
         
         try:

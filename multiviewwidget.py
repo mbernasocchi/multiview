@@ -137,6 +137,7 @@ class MultiViewWidget(QDialog):
     def drill(self):
         values = {}
         groups = self.legend.groupLayerRelationship()
+        self.maxValue = 100
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
@@ -150,7 +151,6 @@ class MultiViewWidget(QDialog):
                     #Only GrayOrUndefined rasters (no multiband or palette rasters)
                     if layer and layer.type() == QgsMapLayer.RasterLayer \
                         and layer.rasterType() == QgsRasterLayer.GrayOrUndefined:
-                        
                         extent = layer.extent()
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)

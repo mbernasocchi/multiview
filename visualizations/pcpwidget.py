@@ -51,6 +51,7 @@ class PCPWidget(QWidget):
             curve.setPen(QPen(color))
             curve.setData(values.keys(), values.values())
             curve.attach(self.ui.qwtPlot)
+        self.ui.qwtPlot.setAxisScale(0,0,self.main.maxValue)
         #finally, refresh the plot
         self.ui.qwtPlot.replot()
         
