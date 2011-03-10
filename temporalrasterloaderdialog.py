@@ -85,7 +85,9 @@ class TemporalRasterLoaderDialog(QDialog):
                 #createLayer
                 layer = QgsRasterLayer(filePath, layerName)
                 layer.setCustomProperty("isTemporalRaster", True)
-                layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
+                #TODO check symbology
+                #layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
+                #layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
                 
                 #add layer to project
                 if layer.isValid():

@@ -151,6 +151,12 @@ class MultiViewWidget(QDialog):
                     #Only GrayOrUndefined rasters (no multiband or palette rasters)
                     if layer and layer.type() == QgsMapLayer.RasterLayer \
                         and layer.rasterType() == QgsRasterLayer.GrayOrUndefined:
+                        
+                        #getting layer maximal value if needed update absolute max value
+                        layerMaxValue =  layer.bandStatistics(1).maximumValue
+                        if layerMaxValue > self.maxValue:
+                            self.maxValue = layerMaxValue
+                            
                         extent = layer.extent()
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)
