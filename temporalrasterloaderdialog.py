@@ -85,15 +85,16 @@ class TemporalRasterLoaderDialog(QDialog):
                 #createLayer
                 layer = QgsRasterLayer(filePath, layerName)
                 layer.setCustomProperty("isTemporalRaster", True)
-                #TODO check symbology
-                #layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
-                #layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
+                #set symbology to pseudocolors
+                layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
+                layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
                 
                 #add layer to project
                 if layer.isValid():
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
                     self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
+                    
                     
                     #get the current group index
                     groups = []

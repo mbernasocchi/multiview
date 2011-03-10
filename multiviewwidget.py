@@ -30,7 +30,7 @@ from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
 #import visualizations
 from visualizations.rawvaluewidget import RawValueWidget
-from visualizations.pcpwidget import PCPWidget
+from visualizations.timeplotwidget import TimePlotWidget
 from visualizations.helixwidget import HelixWidget
 
 # create the widget
@@ -51,7 +51,7 @@ class MultiViewWidget(QDialog):
         self.parent = parent 
         
         #create visualizations
-        self.visualizations = [PCPWidget(self), HelixWidget(self), RawValueWidget(self)]
+        self.visualizations = [TimePlotWidget(self), HelixWidget(self), RawValueWidget(self)]
         for v in self.visualizations:
             self.ui.visualizations.addTab(v, v.name())
         self.selectedVisualization = self.visualizations[0] 
@@ -137,12 +137,11 @@ class MultiViewWidget(QDialog):
     def drill(self):
         values = {}
         groups = self.legend.groupLayerRelationship()
-        self.maxValue = 100
+        self.maxValue = 0
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
             groupValues = {}
-            #print groupName +" in "+ str(self.activatedVariables)+"? "+str(groupLayers in self.activatedVariables)
             #Group is selected in widget
             if groupName in self.activatedVariables:
                 for layerName in groupLayers:
