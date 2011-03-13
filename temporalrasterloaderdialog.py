@@ -22,10 +22,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
+from stepdurationdialog import StepDurationDialog
+
 from ui_temporalrasterloaderdialog import Ui_TemporalRasterLoaderDialog
+
 # create the dialog for zoom to point
 class TemporalRasterLoaderDialog(QDialog):
     def __init__(self, iface):
@@ -52,8 +55,8 @@ class TemporalRasterLoaderDialog(QDialog):
             #END Hack
             
             i = 0.0
-            startTime = datetime.now()
-            self.printToResult("NEW IMPORT RUN\nStart: " + str(startTime))
+            importStartTime = datetime.now()
+            self.printToResult("NEW IMPORT RUN\nStart: " + str(importStartTime))
             
             #re for the temporal format
             temporalSearchPattern = re.compile(str(self.ui.temporalRegEx.text()))
@@ -62,21 +65,38 @@ class TemporalRasterLoaderDialog(QDialog):
             #re to remove all non digit
             onlyDigits = re.compile(r'[^\d]+')
             
+            stepDurations = {}
+            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), "%Y-%m-%d %H:%M:%S")
+            
             for filePath in self.files:
                 i += 1
                 self.ui.progressBar.setValue(i / filesCount * 100)
                 fileBaseName = QFileInfo(filePath).baseName()
                 
                 #look for search pattern in filename
-                fileNameInfo = temporalSearchPattern.search(fileBaseName)
-                temporalInfo = fileNameInfo.group()
-                fileNameInfo = intervalSearchPattern.search(fileBaseName)
-                intervalInfo = fileNameInfo.group()
-                variableInfo = str(fileBaseName).replace(temporalInfo, '').replace(intervalInfo, '')
+                stepNumberText = temporalSearchPattern.search(fileBaseName)
+                stepNumberText = stepNumberText.group()
+                stepNumber   = int(onlyDigits.sub('', str(stepNumberText)))
+                stepDurationText = intervalSearchPattern.search(fileBaseName)
+                stepDurationText = stepDurationText.group()
+                if stepDurationText in stepDurations.keys():
+                    stepDuration = stepDurations[stepDurationText]
+                else:
+                    dlg = StepDurationDialog(stepDurationText)
+                    # show the dialog
+                    dlg.show()
+                    # See if OK was pressed
+                    if dlg.exec_():
+                      stepDuration = int(dlg.ui.input.text())
+                      stepDuration = timedelta(seconds=stepDuration)
+                      stepDurations[stepDurationText] = stepDuration
+                    
+                variableInfo = str(fileBaseName).replace(stepNumberText, '').replace(stepDurationText, '')
                 
-                groupName = variableInfo + intervalInfo
-                layerName = onlyDigits.sub('', str(temporalInfo))
-
+                groupName = variableInfo + stepDurationText
+                layerName = str(stepNumber)
+                layerTime = layersStartDatetime + ( stepDuration * stepNumber )
+                
                 #check if new group is needed
                 if groupName not in self.legend.groups():
                     self.legend.addGroup(groupName, False)
@@ -84,7 +104,10 @@ class TemporalRasterLoaderDialog(QDialog):
                     
                 #createLayer
                 layer = QgsRasterLayer(filePath, layerName)
+                #set time properties
                 layer.setCustomProperty("isTemporalRaster", True)
+                layer.setCustomProperty("temporalRasterTime", str(layerTime))
+                
                 #set symbology to pseudocolors
                 layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
                 layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
@@ -119,9 +142,9 @@ class TemporalRasterLoaderDialog(QDialog):
             self.legend.removeGroup(tmpGroup)   
             #END Hack
             
-            endTime = datetime.now()
-            self.printToResult("End: " + str(endTime))
-            self.printToResult("Duration: " + str(endTime - startTime))
+            importEndTime = datetime.now()
+            self.printToResult("End: " + str(importEndTime))
+            self.printToResult("Duration: " + str(importEndTime - importStartTime))
         
     def printToResult(self, text):
         self.ui.results.setText(self.ui.results.toPlainText() + "\n" + text)

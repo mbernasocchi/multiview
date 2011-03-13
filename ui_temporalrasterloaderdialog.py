@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_temporalrasterloaderdialog.ui'
 #
-# Created: Tue Mar  8 22:28:20 2011
+# Created: Sun Mar 13 10:35:02 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -52,6 +52,12 @@ class Ui_TemporalRasterLoaderDialog(object):
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.label_3 = QtGui.QLabel(self.verticalLayoutWidget)
+        self.label_3.setObjectName("label_3")
+        self.horizontalLayout_4.addWidget(self.label_3)
+        self.startDatetime = QtGui.QLineEdit(self.verticalLayoutWidget)
+        self.startDatetime.setObjectName("startDatetime")
+        self.horizontalLayout_4.addWidget(self.startDatetime)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem1)
         self.closeButton = QtGui.QPushButton(self.verticalLayoutWidget)
@@ -74,5 +80,7 @@ class Ui_TemporalRasterLoaderDialog(object):
         self.label_2.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Interval RE:", None, QtGui.QApplication.UnicodeUTF8))
         self.intervalRegEx.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "S\\d\\d\\d\\d", None, QtGui.QApplication.UnicodeUTF8))
         self.loadDataButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Choose and Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Start date:", None, QtGui.QApplication.UnicodeUTF8))
+        self.startDatetime.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "YYYY-MM-DD HH:MM:SS", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 
