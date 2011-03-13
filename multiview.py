@@ -26,6 +26,7 @@ from qgis.core import *
 import resources
 # Import the code for the widget
 from multiviewwidget import MultiViewWidget
+from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
 class MultiView:
 
@@ -36,30 +37,49 @@ class MultiView:
         self.mainWindow = iface.mainWindow()
 
     def initGui(self):
-        # Create action that will start plugin configuration
-        self.action = QAction(QIcon(":/plugins/multiview/icon.png"), \
+        # Create action that will start plugin
+        self.runAction = QAction(QIcon(":/plugins/multiview/icon.png"), \
             "MultiView", self.mainWindow)
-        # connect the action to the run method
-        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
+        QObject.connect(self.runAction, SIGNAL("triggered()"), self.run)
+        
+        self.loadDataAction = QAction(QIcon(":/plugins/multiview/icon.png"), \
+            "MultiView Data Loader", self.mainWindow)
+        QObject.connect(self.loadDataAction, SIGNAL("triggered()"), self.loadData)
 
         # Add toolbar button and menu item
-        self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu("&Analyses", self.action)
+        self.iface.addToolBarIcon(self.runAction)
+        self.iface.addPluginToMenu("&Analyses", self.runAction)
+        self.iface.addToolBarIcon(self.loadDataAction)
+        self.iface.addPluginToMenu("&Analyses", self.loadDataAction)
         
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&Analyses", self.action)
-        self.iface.removeToolBarIcon(self.action)
+        self.iface.removePluginMenu("&Analyses", self.runAction)
+        self.iface.removeToolBarIcon(self.runAction)
+        self.iface.removePluginMenu("&Analyses", self.loadDataAction)
+        self.iface.removeToolBarIcon(self.loadDataAction)
         
         try:
             self.multiviewwidget.temporalRasterLoader.close()
+        except:
+            pass
+        try:
+            self.temporalRasterLoader.close()
+        except:
+            pass
+        try:
             self.multiviewwidget.close()
         except:
             pass
-
+        
     # run method that performs all the real work
     def run(self):
         # create the widget
         self.multiviewwidget = MultiViewWidget(self.iface, self)
         # show the widget
         self.multiviewwidget.show()
+    
+    def loadData(self):
+        self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface)
+        # show the dialog
+        self.temporalRasterLoader.show()

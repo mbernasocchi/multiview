@@ -138,6 +138,9 @@ class MultiViewWidget(QDialog):
         values = {}
         groups = self.legend.groupLayerRelationship()
         self.maxValue = 0
+        self.minTime = 0
+        self.maxTime = 0
+        
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
@@ -295,12 +298,6 @@ class MultiViewWidget(QDialog):
         self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface)
         # show the dialog
         self.temporalRasterLoader.show()
-        result = self.temporalRasterLoader.exec_()
-#        # See if OK was pressed
-        if result == 1:
-#            # do something useful (delete the line containing pass and
-#            # substitute with your code
-            pass
                 
     @pyqtSlot()
     def on_closeButton_clicked(self):

@@ -37,7 +37,16 @@ class TimePlotWidget(QWidget):
         self.ui = Ui_TimePlotWidget()
         self.ui.setupUi(self)
         self.main = main
-    
+        self.plot = self.ui.qwtPlot
+        
+        #setup plot
+        scale = TimeScaleDraw(QDateTime.currentDateTime())
+        self.plot.setAxisScaleDraw(QwtPlot.xBottom, scale)
+        self.plot.setAxisTitle(QwtPlot.xBottom, "Time")
+        self.plot.setAxisLabelRotation(QwtPlot.xBottom, -50.0)
+        self.plot.setAxisLabelAlignment(QwtPlot.xBottom, Qt.AlignLeft | Qt.AlignBottom)
+        self.plot.setAxisTitle(QwtPlot.yLeft, "Value")
+        
     def name(self):
         return "TimePlot"
     
@@ -50,12 +59,25 @@ class TimePlotWidget(QWidget):
             curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
             curve.setPen(QPen(color))
             curve.setData(values.keys(), values.values())
-            curve.attach(self.ui.qwtPlot)
-        self.ui.qwtPlot.setAxisScale(0,0,self.main.maxValue)
+            curve.attach(self.plot)
+        self.plot.setAxisScale(QwtPlot.xBottom,0,self.main.maxValue)
         #finally, refresh the plot
-        self.ui.qwtPlot.replot()
+        self.plot.replot()
         
     def reset(self):
-        self.ui.qwtPlot.detachItems()
-        self.ui.qwtPlot.replot()
+        self.plot.detachItems()
+        self.plot.replot()
         
+        
+class TimeScaleDraw(QwtScaleDraw):
+    def __init__(self, baseTime):
+        QwtScaleDraw.__init__(self)
+        #QTime baseTime
+        self.baseTime = baseTime
+
+    def label(self, secs):
+        upTime = self.baseTime.addSecs(secs)
+        upTime = upTime.toString()
+        label = QwtText(upTime)
+        return label
+    
