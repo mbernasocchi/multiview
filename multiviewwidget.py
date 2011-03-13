@@ -145,7 +145,6 @@ class MultiViewWidget(QDialog):
         self.valueMax = -sys.maxint
         self.timeMin = datetime.max
         self.timeMax = datetime.min
-        self.timeDeltaMax = 0
         
         #get time and values ranges
         for group in groups:
@@ -178,7 +177,7 @@ class MultiViewWidget(QDialog):
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
-            groupValues = {}
+            groupValues = []
             
             #Group is selected in widget
             if groupName in self.activatedVariables:
@@ -195,14 +194,10 @@ class MultiViewWidget(QDialog):
                             timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat) - self.timeMin
                             #same as timeDelta = timedelta.total_seconds()
                             timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
-                            print str(layerName)+": "+str(timeDelta)
-                            if timeDelta > self.timeDeltaMax:
-                                self.timeDeltaMax = timeDelta
                             value = float(ident[1].values()[0])
-                            groupValues[timeDelta] = value
-                            print groupValues
+                            groupValues.append([timeDelta, value])
+                groupValues.reverse()
                 values[groupName] = groupValues
-             
         return values
 
 #    def readProjectActivatedVariables(self):

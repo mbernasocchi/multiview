@@ -49,26 +49,31 @@ class TimePlotWidget(QWidget):
     
     def redraw(self, valuesArray):
         self.reset()
-        #add curves
         ticks = []
+        #add curves
         for (layerGroupName, values) in valuesArray.iteritems():
+            x = []
+            y = []
+            for value in values:
+                x.append(value[0])
+                y.append(value[1])
+            
             color = self.main.colors[QString(layerGroupName)]
             curve = QwtPlotCurve(layerGroupName)
             curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
             curve.setPen(QPen(color))   
-            curve.setData(values.keys(), values.values())
+            curve.setData(x, y)
             curve.attach(self.plot)
-            ticks = set.union(set(ticks), set(values.keys()))
+            ticks = list(set.union(set(ticks), set(x)))
         
-        ticks = list(ticks)
         ticks.sort()
         div = QwtScaleDiv()
-        div.setInterval(0, self.main.timeDeltaMax)
+        div.setInterval(ticks[0], ticks[len(ticks)-1])
         div.setTicks(QwtScaleDiv.MajorTick, ticks)
-        
+
         #update axes
-        self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
         self.plot.setAxisScaleDraw(QwtPlot.xBottom, TimeScaleDraw(QDateTime(self.main.timeMin)))
+        self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
         self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
         
         
