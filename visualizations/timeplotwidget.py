@@ -37,30 +37,41 @@ class TimePlotWidget(QWidget):
         self.ui = Ui_TimePlotWidget()
         self.ui.setupUi(self)
         self.main = main
+        self.timeFormat = self.main.timeFormat
         self.plot = self.ui.qwtPlot
         
         #setup plot
-        scale = TimeScaleDraw(QDateTime.currentDateTime())
-        self.plot.setAxisScaleDraw(QwtPlot.xBottom, scale)
-        self.plot.setAxisTitle(QwtPlot.xBottom, "Time")
-        self.plot.setAxisLabelRotation(QwtPlot.xBottom, -50.0)
-        self.plot.setAxisLabelAlignment(QwtPlot.xBottom, Qt.AlignLeft | Qt.AlignBottom)
+        #self.plot.setAxisTitle(QwtPlot.xBottom, "Time")
         self.plot.setAxisTitle(QwtPlot.yLeft, "Value")
-        
+    
     def name(self):
         return "TimePlot"
     
     def redraw(self, valuesArray):
         self.reset()
         #add curves
+        ticks = []
         for (layerGroupName, values) in valuesArray.iteritems():
             color = self.main.colors[QString(layerGroupName)]
             curve = QwtPlotCurve(layerGroupName)
             curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
-            curve.setPen(QPen(color))
+            curve.setPen(QPen(color))   
             curve.setData(values.keys(), values.values())
             curve.attach(self.plot)
-        self.plot.setAxisScale(QwtPlot.xBottom,0,self.main.maxValue)
+            ticks = set.union(set(ticks), set(values.keys()))
+        
+        ticks = list(ticks)
+        ticks.sort()
+        div = QwtScaleDiv()
+        div.setInterval(0, self.main.timeDeltaMax)
+        div.setTicks(QwtScaleDiv.MajorTick, ticks)
+        
+        #update axes
+        self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
+        self.plot.setAxisScaleDraw(QwtPlot.xBottom, TimeScaleDraw(QDateTime(self.main.timeMin)))
+        self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
+        
+        
         #finally, refresh the plot
         self.plot.replot()
         
@@ -74,10 +85,11 @@ class TimeScaleDraw(QwtScaleDraw):
         QwtScaleDraw.__init__(self)
         #QTime baseTime
         self.baseTime = baseTime
+        self.setLabelAlignment(Qt.AlignLeft | Qt.AlignBottom)
+        self.setLabelRotation(-25.0)
 
     def label(self, secs):
         upTime = self.baseTime.addSecs(secs)
-        upTime = upTime.toString()
-        label = QwtText(upTime)
-        return label
+        upTime = upTime.toString('dd MM yy hh:mm:ss')
+        return QwtText(upTime)
     

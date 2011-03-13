@@ -31,7 +31,7 @@ from ui_temporalrasterloaderdialog import Ui_TemporalRasterLoaderDialog
 
 # create the dialog for zoom to point
 class TemporalRasterLoaderDialog(QDialog):
-    def __init__(self, iface):
+    def __init__(self, iface, main):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_TemporalRasterLoaderDialog()
@@ -42,6 +42,8 @@ class TemporalRasterLoaderDialog(QDialog):
         self.mainWindow = self.iface.mainWindow()
         self.mapCanvas = self.iface.mapCanvas()
         self.legend = self.iface.legendInterface()
+        self.main = main
+        self.timeFormat = self.main.timeFormat
     
     def loadTemporalRasters(self):
         filesCount = len(self.files)
@@ -66,7 +68,7 @@ class TemporalRasterLoaderDialog(QDialog):
             onlyDigits = re.compile(r'[^\d]+')
             
             stepDurations = {}
-            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), "%Y-%m-%d %H:%M:%S")
+            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), self.timeFormat)
             
             for filePath in self.files:
                 i += 1
@@ -95,7 +97,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 groupName = variableInfo + stepDurationText
                 layerName = str(stepNumber)
-                layerTime = layersStartDatetime + ( stepDuration * stepNumber )
+                layerTime = layersStartDatetime + ( stepDuration *  (stepNumber - 1) )
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
@@ -103,9 +105,10 @@ class TemporalRasterLoaderDialog(QDialog):
                     self.printToResult("New group: " + groupName)
                     
                 #createLayer
-                layer = QgsRasterLayer(filePath, layerName)
+                layer = QgsRasterLayer(filePath, fileBaseName)
                 #set time properties
                 layer.setCustomProperty("isTemporalRaster", True)
+                layer.setCustomProperty("temporalRasterIteration", layerName)
                 layer.setCustomProperty("temporalRasterTime", str(layerTime))
                 
                 #set symbology to pseudocolors

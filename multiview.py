@@ -35,6 +35,7 @@ class MultiView:
         self.iface = iface
         self.mapCanvas = iface.mapCanvas()
         self.mainWindow = iface.mainWindow()
+        self.timeFormat = "%Y-%m-%d %H:%M:%S"
 
     def initGui(self):
         # Create action that will start plugin
@@ -80,6 +81,6 @@ class MultiView:
         self.multiviewwidget.show()
     
     def loadData(self):
-        self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface)
+        self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface, self)
         # show the dialog
         self.temporalRasterLoader.show()

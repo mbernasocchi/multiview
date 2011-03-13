@@ -25,6 +25,9 @@ from qgis.core import *
 from qgis.gui import *
 from panemitmaptool import PanEmitMapTool
 
+from datetime import datetime, timedelta
+import sys
+
 from ui_multiview import Ui_MultiView
 from temporalrasterloaderdialog import TemporalRasterLoaderDialog
 
@@ -35,7 +38,7 @@ from visualizations.helixwidget import HelixWidget
 
 # create the widget
 class MultiViewWidget(QDialog):
-    def __init__(self, iface, parent):
+    def __init__(self, iface, main):
         QWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_MultiView()
@@ -48,7 +51,8 @@ class MultiViewWidget(QDialog):
         self.legend = self.iface.legendInterface()
         self.mapTool = self.mapCanvas.mapTool()
         self.proj = QgsProject.instance()
-        self.parent = parent 
+        self.main = main
+        self.timeFormat = self.main.timeFormat
         
         #create visualizations
         self.visualizations = [TimePlotWidget(self), HelixWidget(self), RawValueWidget(self)]
@@ -135,36 +139,68 @@ class MultiViewWidget(QDialog):
             self.selectedVisualization.redraw(self.drill())
         
     def drill(self):
-        values = {}
         groups = self.legend.groupLayerRelationship()
-        self.maxValue = 0
-        self.minTime = 0
-        self.maxTime = 0
         
+        self.valueMin = sys.maxint
+        self.valueMax = -sys.maxint
+        self.timeMin = datetime.max
+        self.timeMax = datetime.min
+        self.timeDeltaMax = 0
+        
+        #get time and values ranges
+        for group in groups:
+            groupName = str(group[0])
+            groupLayers = group[1]
+            
+            #Group is selected in widget
+            if groupName in self.activatedVariables:
+                for layerName in groupLayers:
+                    layer = QgsMapLayerRegistry.instance().mapLayer(layerName)
+                    #Only GrayOrUndefined rasters (no multiband or palette rasters)
+                    if layer and layer.customProperty("isTemporalRaster", True).toBool():
+                        #getting layer maximal value if needed update absolute max value
+                        layerValueMax =  layer.bandStatistics(1).maximumValue
+                        if layerValueMax > self.valueMax:
+                            self.valueMax = layerValueMax
+                        layerValueMin =  layer.bandStatistics(1).minimumValue
+                        if layerValueMin < self.valueMin:
+                            self.valueMin = layerValueMin
+                        
+                        #set max and min times
+                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat)
+                        if layerTime < self.timeMin:
+                            self.timeMin = layerTime
+                        elif layerTime > self.timeMax:
+                            self.timeMax = layerTime
+                        
+        
+        values = {}
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
             groupValues = {}
+            
             #Group is selected in widget
             if groupName in self.activatedVariables:
                 for layerName in groupLayers:
-                    #print "\t"+layerName
                     layer = QgsMapLayerRegistry.instance().mapLayer(layerName)
                     #Only GrayOrUndefined rasters (no multiband or palette rasters)
                     if layer and layer.type() == QgsMapLayer.RasterLayer \
                         and layer.rasterType() == QgsRasterLayer.GrayOrUndefined:
-                        
-                        #getting layer maximal value if needed update absolute max value
-                        layerMaxValue =  layer.bandStatistics(1).maximumValue
-                        if layerMaxValue > self.maxValue:
-                            self.maxValue = layerMaxValue
                             
                         extent = layer.extent()
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)
-                            time = int(layer.name())
+                            iteration = layer.customProperty("temporalRasterIteration").toInt()[0]
+                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat) - self.timeMin
+                            #same as timeDelta = timedelta.total_seconds()
+                            timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
+                            print str(layerName)+": "+str(timeDelta)
+                            if timeDelta > self.timeDeltaMax:
+                                self.timeDeltaMax = timeDelta
                             value = float(ident[1].values()[0])
-                            groupValues[time] = value
+                            groupValues[timeDelta] = value
+                            print groupValues
                 values[groupName] = groupValues
              
         return values
@@ -172,7 +208,7 @@ class MultiViewWidget(QDialog):
 #    def readProjectActivatedVariables(self):
 #        #init the activated variables list
 #        try:
-#            self.activatedVariables = self.parent.activatedVariables
+#            self.activatedVariables = self.main.activatedVariables
 #        except:
 #            self.activatedVariables = []
 #            try:
@@ -295,7 +331,7 @@ class MultiViewWidget(QDialog):
     
     @pyqtSlot()
     def on_loadDataButton_clicked(self):
-        self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface)
+        self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface, self.main)
         # show the dialog
         self.temporalRasterLoader.show()
                 
