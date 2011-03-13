@@ -95,7 +95,11 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 groupName = variableInfo + stepDurationText
                 layerName = str(stepNumber)
+<<<<<<< HEAD
                 layerTime = layersStartDatetime + ( stepDuration * stepNumber )
+=======
+                layerTime = layersStartTime + ( stepDuration * stepNumber )
+>>>>>>> 50c78e27e259ee92158762c30a692a50c9f73bff
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
@@ -107,8 +111,11 @@ class TemporalRasterLoaderDialog(QDialog):
                 #set time properties
                 layer.setCustomProperty("isTemporalRaster", True)
                 layer.setCustomProperty("temporalRasterTime", str(layerTime))
+<<<<<<< HEAD
                 
                 #set symbology to pseudocolors
+=======
+>>>>>>> 50c78e27e259ee92158762c30a692a50c9f73bff
                 layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
                 layer.setColorShadingAlgorithm(QgsRasterLayer.PseudoColorShader)
                 
