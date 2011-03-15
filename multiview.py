@@ -23,7 +23,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 # Initialize Qt resources from file resources.py
-import resources
+import resources_rc
 # Import the code for the widget
 from multiviewwidget import MultiViewWidget
 from temporalrasterloaderdialog import TemporalRasterLoaderDialog
@@ -39,11 +39,11 @@ class MultiView:
 
     def initGui(self):
         # Create action that will start plugin
-        self.runAction = QAction(QIcon(":/plugins/multiview/icon.png"), \
+        self.runAction = QAction(QIcon(":/plugins/multiview/images/icon.png"), \
             "MultiView", self.mainWindow)
         QObject.connect(self.runAction, SIGNAL("triggered()"), self.run)
         
-        self.loadDataAction = QAction(QIcon(":/plugins/multiview/icon.png"), \
+        self.loadDataAction = QAction(QIcon(":/plugins/multiview/images/icon_loader.png"), \
             "MultiView Data Loader", self.mainWindow)
         QObject.connect(self.loadDataAction, SIGNAL("triggered()"), self.loadData)
 

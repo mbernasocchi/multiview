@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_stepdurationdialog.ui'
 #
-# Created: Sun Mar 13 01:55:18 2011
+# Created: Tue Mar 15 20:20:07 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,6 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_StepDurationDialog(object):
     def setupUi(self, StepDurationDialog):
         StepDurationDialog.setObjectName("StepDurationDialog")
+        StepDurationDialog.setWindowModality(QtCore.Qt.WindowModal)
         StepDurationDialog.resize(382, 162)
         self.verticalLayoutWidget = QtGui.QWidget(StepDurationDialog)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 10, 371, 141))

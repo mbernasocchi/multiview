@@ -92,7 +92,10 @@ class TemporalRasterLoaderDialog(QDialog):
                       stepDuration = int(dlg.ui.input.text())
                       stepDuration = timedelta(seconds=stepDuration)
                       stepDurations[stepDurationText] = stepDuration
-                    
+                    else:
+                        self.printToResult("ABORTED by user when entering " + stepDurationText + " duration")
+                        break
+                        
                 variableInfo = str(fileBaseName).replace(stepNumberText, '').replace(stepDurationText, '')
                 
                 groupName = variableInfo + stepDurationText
@@ -141,6 +144,7 @@ class TemporalRasterLoaderDialog(QDialog):
                     self.printToResult("Layer invalid : " + layerName + " of " + groupName + " -> ERROR")
              
             #TODO hack to generate the correct groups
+            #BUG https://trac.osgeo.org/qgis/ticket/3263
             QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
             self.legend.removeGroup(tmpGroup)   
             #END Hack

@@ -31,25 +31,26 @@ LANG_PATH=i18n
 LANG_SOURCES=$(wildcard $(LANG_PATH)/*.ts)
 LANG_FILES=$(patsubst $(LANG_PATH)/%.ts, $(LANG_PATH)/%.qm, $(LANG_SOURCES))
 
-RES_PATH=
+RES_PATH=.
 RES_SOURCES=$(wildcard $(RES_PATH)/*.qrc)
-RES_FILES=$(patsubst $(LANG_PATH)/%.qrc, $(LANG_PATH)/%_rc.py, $(RES_SOURCES))
+RES_FILES=$(patsubst $(RES_PATH)/%.qrc, $(RES_PATH)/%_rc.py, $(RES_SOURCES))
 
 ALL_FILES= ${RES_FILES} ${UI_FILES} ${VIS_UI_FILES} ${LANG_FILES}
 
 all: $(ALL_FILES)
 
-ui: $(UI_FILES)
+ui: $(UI_FILES) 
+
+visui: $(VIS_UI_FILES) 
 
 lang: $(LANG_FILES)
 
 res: $(RES_FILES)
 
-
-$(UI_FILES): $(UI_PATH)/%.py: $(UI_PATH)/%.ui
+$(VIS_UI_FILES): $(VIS_UI_PATH)/%.py: $(VIS_UI_PATH)/%.ui
 	pyuic4 -o $@ $<
 
-$(VIS_UI_FILES): $(VIS_UI_PATH)/%.py: $(VIS_UI_PATH)/%.ui
+$(UI_FILES): $(UI_PATH)/%.py: $(UI_PATH)/%.ui
 	pyuic4 -o $@ $<
 
 $(LANG_FILES): $(LANG_PATH)/%.qm: $(LANG_PATH)/%.ts

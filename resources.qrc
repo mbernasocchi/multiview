@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/plugins/helixview" >
-        <file>icon.png</file>
+    <qresource prefix="/plugins/multiview">
+        <file>images/icon.png</file>
+        <file>images/icon_loader.png</file>
     </qresource>
 </RCC>

@@ -66,16 +66,18 @@ class TimePlotWidget(QWidget):
             curve.attach(self.plot)
             ticks = list(set.union(set(ticks), set(x)))
         
-        ticks.sort()
-        div = QwtScaleDiv()
-        div.setInterval(ticks[0], ticks[len(ticks)-1])
-        div.setTicks(QwtScaleDiv.MajorTick, ticks)
-
-        #update axes
-        self.plot.setAxisScaleDraw(QwtPlot.xBottom, TimeScaleDraw(QDateTime(self.main.timeMin)))
-        self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
-        self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
-        
+        if len(ticks) > 0:
+            ticks.sort()
+            #update axes
+            div = QwtScaleDiv()
+            div.setInterval(ticks[0], ticks[len(ticks)-1])
+            div.setTicks(QwtScaleDiv.MinorTick, [])
+            div.setTicks(QwtScaleDiv.MediumTick, [])
+            div.setTicks(QwtScaleDiv.MajorTick, ticks)
+            draw = TimeScaleDraw(QDateTime(self.main.timeMin))
+            draw.setScaleDiv(div)
+            self.plot.setAxisScaleDraw(QwtPlot.xBottom, draw)
+            self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
         
         #finally, refresh the plot
         self.plot.replot()

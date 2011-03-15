@@ -110,7 +110,7 @@ class MultiViewWidget(QDialog):
         print str(text)
         
     def updateMultiVariables(self, button):
-        #TODO this assumes unique layerGroup names
+        #this assumes unique layerGroup names. the importer creates only unique groups
         varName = button.text()
         #variable has been turned ON
         
@@ -241,15 +241,18 @@ class MultiViewWidget(QDialog):
         except:
             pass
 
+        #count temporal groups
+        groupsCount = 0
+        for layerGroupName in self.legend.groups():
+            if self.hasTemporalRasters(layerGroupName):
+                groupsCount += 1
+        
         #add the updated checkboxes
         i = 0
-        #TODO better solution
-        maxColors = 10
         for layerGroupName in self.legend.groups():
-            layerGroupName = layerGroupName
             if self.hasTemporalRasters(layerGroupName):
                 #create a legend color
-                self.colors[layerGroupName] = QColor.fromHsv( int(360 / maxColors * i), 255, 255 )
+                self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 255, 255 )
                 #create the checkbox
                 cb = QCheckBox(layerGroupName)
                 self.ui.availableVariablesGroup.addButton(cb)

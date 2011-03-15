@@ -30,4 +30,8 @@ class StepDurationDialog(QtGui.QDialog):
         self.ui.setupUi(self)
         self.ui.stepDurationText.setText(stepDurationText)
         self.setWindowTitle(stepDurationText)
-        #TODO check if INT
+
+        #allow only INT bigger than 1
+        validator = QtGui.QIntValidator(self)
+        validator.setBottom(1)  
+        self.ui.input.setValidator(validator);
