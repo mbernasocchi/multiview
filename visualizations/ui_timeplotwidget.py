@@ -28,4 +28,4 @@ class Ui_TimePlotWidget(object):
     def retranslateUi(self, TimePlotWidget):
         TimePlotWidget.setWindowTitle(QtGui.QApplication.translate("TimePlotWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
 
-from qwt_plot import QwtPlot
+from PyQt4.Qwt5 import QwtPlot
