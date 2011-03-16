@@ -252,7 +252,7 @@ class MultiViewWidget(QDialog):
         for layerGroupName in self.legend.groups():
             if self.hasTemporalRasters(layerGroupName):
                 #create a legend color
-                self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 255, 255 )
+                self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 150, 255 )
                 #create the checkbox
                 cb = QCheckBox(layerGroupName)
                 self.ui.availableVariablesGroup.addButton(cb)

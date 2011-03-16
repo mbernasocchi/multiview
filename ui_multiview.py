@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Wed Mar  9 01:23:51 2011
+# Created: Wed Mar 16 10:54:49 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MultiView(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget(self.scrollArea)
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 388, 124))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 388, 82))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -47,17 +47,8 @@ class Ui_MultiView(object):
         self.verticalLayout_5.addLayout(self.availableVariables)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         self.left.addWidget(self.scrollArea)
-        self.availableVariablesUpdateButton = QtGui.QPushButton(self.layoutWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.availableVariablesUpdateButton.sizePolicy().hasHeightForWidth())
-        self.availableVariablesUpdateButton.setSizePolicy(sizePolicy)
-        self.availableVariablesUpdateButton.setObjectName("availableVariablesUpdateButton")
-        self.left.addWidget(self.availableVariablesUpdateButton)
-        self.loadDataButton = QtGui.QPushButton(self.layoutWidget)
-        self.loadDataButton.setObjectName("loadDataButton")
-        self.left.addWidget(self.loadDataButton)
+        self.horizontalLayout_4 = QtGui.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.groupBox = QtGui.QGroupBox(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -76,7 +67,24 @@ class Ui_MultiView(object):
         self.trackRightClick = QtGui.QRadioButton(self.horizontalLayoutWidget_2)
         self.trackRightClick.setObjectName("trackRightClick")
         self.verticalLayout.addWidget(self.trackRightClick)
-        self.left.addWidget(self.groupBox)
+        self.horizontalLayout_4.addWidget(self.groupBox)
+        self.verticalLayout_4 = QtGui.QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.availableVariablesUpdateButton = QtGui.QPushButton(self.layoutWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.availableVariablesUpdateButton.sizePolicy().hasHeightForWidth())
+        self.availableVariablesUpdateButton.setSizePolicy(sizePolicy)
+        self.availableVariablesUpdateButton.setObjectName("availableVariablesUpdateButton")
+        self.verticalLayout_4.addWidget(self.availableVariablesUpdateButton)
+        self.loadDataButton = QtGui.QPushButton(self.layoutWidget)
+        self.loadDataButton.setObjectName("loadDataButton")
+        self.verticalLayout_4.addWidget(self.loadDataButton)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem)
+        self.horizontalLayout_4.addLayout(self.verticalLayout_4)
+        self.left.addLayout(self.horizontalLayout_4)
         self.horizontalLayout.addLayout(self.left)
         self.visualizations = QtGui.QTabWidget(self.layoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -116,10 +124,10 @@ class Ui_MultiView(object):
     def retranslateUi(self, MultiView):
         MultiView.setWindowTitle(QtGui.QApplication.translate("MultiView", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.title.setText(QtGui.QApplication.translate("MultiView", "Enable Variables:", None, QtGui.QApplication.UnicodeUTF8))
-        self.availableVariablesUpdateButton.setText(QtGui.QApplication.translate("MultiView", "Update List", None, QtGui.QApplication.UnicodeUTF8))
-        self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("MultiView", "Tracking:", None, QtGui.QApplication.UnicodeUTF8))
         self.trackMouseMove.setText(QtGui.QApplication.translate("MultiView", "Mouse Move", None, QtGui.QApplication.UnicodeUTF8))
         self.trackRightClick.setText(QtGui.QApplication.translate("MultiView", "Right click", None, QtGui.QApplication.UnicodeUTF8))
+        self.availableVariablesUpdateButton.setText(QtGui.QApplication.translate("MultiView", "Update List", None, QtGui.QApplication.UnicodeUTF8))
+        self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("MultiView", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

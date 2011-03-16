@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_rawvaluewidget.ui'
 #
-# Created: Tue Mar 15 16:12:02 2011
+# Created: Wed Mar 16 10:56:25 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!

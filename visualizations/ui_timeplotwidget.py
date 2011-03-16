@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_timeplotwidget.ui'
 #
-# Created: Thu Mar 10 19:45:29 2011
+# Created: Wed Mar 16 10:56:25 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,4 +28,4 @@ class Ui_TimePlotWidget(object):
     def retranslateUi(self, TimePlotWidget):
         TimePlotWidget.setWindowTitle(QtGui.QApplication.translate("TimePlotWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
 
-from PyQt4.Qwt5 import QwtPlot
+from qwt_plot import QwtPlot
