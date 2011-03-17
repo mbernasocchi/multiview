@@ -48,6 +48,7 @@ class TemporalRasterLoaderDialog(QDialog):
     def loadTemporalRasters(self):
         filesCount = len(self.files)
         if filesCount > 0:
+            self.main.isLoadingTemporalData = True
             
             #TODO hack to generate the correct groups
             tmpGroup = self.legend.addGroup("dummy group", False)
@@ -152,6 +153,11 @@ class TemporalRasterLoaderDialog(QDialog):
             importEndTime = datetime.now()
             self.printToResult("End: " + str(importEndTime))
             self.printToResult("Duration: " + str(importEndTime - importStartTime))
+            self.main.isLoadingTemporalData = False
+            try:
+                self.main.multiviewwidget.refreshAll()
+            except:
+                pass
         
     def printToResult(self, text):
         self.ui.results.setText(self.ui.results.toPlainText() + "\n" + text)

@@ -194,8 +194,12 @@ class MultiViewWidget(QDialog):
                             timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat) - self.timeMin
                             #same as timeDelta = timedelta.total_seconds()
                             timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
-                            value = float(ident[1].values()[0])
-                            groupValues.append([timeDelta, value])
+                            try:
+                                #skip NODATA
+                                value = float(ident[1].values()[0])
+                                groupValues.append([timeDelta, value])
+                            except:
+                                pass
                 groupValues.reverse()
                 values[groupName] = groupValues
         return values
@@ -229,40 +233,41 @@ class MultiViewWidget(QDialog):
         self.selectedVisualization.reset()
         
     def updateAvailableVariables(self):
-        #clear the colors dictionary
-        self.colors = {}
-
-        #remove the old checkboxes
-        try:
-            for b in self.ui.availableVariablesGroup.buttons():
-                self.ui.availableVariablesGroup.removeButton(b)
-                self.ui.availableVariables.removeWidget(b)
-                b.hide()
-        except:
-            pass
-
-        #count temporal groups
-        groupsCount = 0
-        for layerGroupName in self.legend.groups():
-            if self.hasTemporalRasters(layerGroupName):
-                groupsCount += 1
-        
-        #add the updated checkboxes
-        i = 0
-        for layerGroupName in self.legend.groups():
-            if self.hasTemporalRasters(layerGroupName):
-                #create a legend color
-                self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 150, 255 )
-                #create the checkbox
-                cb = QCheckBox(layerGroupName)
-                self.ui.availableVariablesGroup.addButton(cb)
-                isOn = layerGroupName in self.activatedVariables 
-                cb.setChecked(bool(isOn))
-                #color the checkbox
-                cb.setStyleSheet("background-color: rgb(" + str(self.colors[layerGroupName].red()) + ", " 
-                                + str(self.colors[layerGroupName].green()) + ", " + str(self.colors[layerGroupName].blue()) + ");\n")
-                self.ui.availableVariables.addWidget(cb)
-                i += 1
+        if not self.main.isLoadingTemporalData:
+            #clear the colors dictionary
+            self.colors = {}
+    
+            #remove the old checkboxes
+            try:
+                for b in self.ui.availableVariablesGroup.buttons():
+                    self.ui.availableVariablesGroup.removeButton(b)
+                    self.ui.availableVariables.removeWidget(b)
+                    b.hide()
+            except:
+                pass
+    
+            #count temporal groups
+            groupsCount = 0
+            for layerGroupName in self.legend.groups():
+                if self.hasTemporalRasters(layerGroupName):
+                    groupsCount += 1
+            
+            #add the updated checkboxes
+            i = 0
+            for layerGroupName in self.legend.groups():
+                if self.hasTemporalRasters(layerGroupName):
+                    #create a legend color
+                    self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 150, 255 )
+                    #create the checkbox
+                    cb = QCheckBox(layerGroupName)
+                    self.ui.availableVariablesGroup.addButton(cb)
+                    isOn = layerGroupName in self.activatedVariables 
+                    cb.setChecked(bool(isOn))
+                    #color the checkbox
+                    cb.setStyleSheet("background-color: rgb(" + str(self.colors[layerGroupName].red()) + ", " 
+                                    + str(self.colors[layerGroupName].green()) + ", " + str(self.colors[layerGroupName].blue()) + ");\n")
+                    self.ui.availableVariables.addWidget(cb)
+                    i += 1
                 
     def updateSelectedVisualization(self, index):
         self.selectedVisualization = self.visualizations[index]

@@ -36,6 +36,7 @@ class MultiView:
         self.mapCanvas = iface.mapCanvas()
         self.mainWindow = iface.mainWindow()
         self.timeFormat = "%Y-%m-%d %H:%M:%S"
+        self.isLoadingTemporalData = False
 
     def initGui(self):
         # Create action that will start plugin
