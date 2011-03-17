@@ -28,7 +28,7 @@ LANG_SOURCES=$(wildcard $(LANG_PATH)/*.ts)
 LANG_FILES=$(patsubst $(LANG_PATH)/%.ts, $(LANG_PATH)/%.qm, $(LANG_SOURCES))
 
 RES_PATH=.
-RES_SOURCES=$(wildcard $(RES_PATH)/*.qrc)
+RES_SOURCES=$(shell find $(UI_PATH) -name '*.qrc')
 RES_FILES=$(patsubst $(RES_PATH)/%.qrc, $(RES_PATH)/%_rc.py, $(RES_SOURCES))
 
 ALL_FILES= ${RES_FILES} ${UI_FILES} ${LANG_FILES}

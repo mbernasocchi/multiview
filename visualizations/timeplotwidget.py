@@ -40,6 +40,29 @@ class TimePlotWidget(QWidget):
         self.timeFormat = self.main.timeFormat
         self.plot = self.ui.qwtPlot
         
+        self.picker = TimeScalePicker(
+            QwtPlot.xBottom,
+            QwtPlot.yLeft,
+            QwtPicker.PointSelection | QwtPicker.DragSelection,
+            QwtPlotPicker.CrossRubberBand,
+            QwtPicker.AlwaysOn,
+            self.plot.canvas())
+        self.picker.setRubberBandPen(QPen(Qt.blue))
+        self.picker.setTrackerPen(QPen(Qt.blue))
+        
+        self.zoomer = QwtPlotZoomer(
+            QwtPlot.xBottom,
+            QwtPlot.yLeft,
+            QwtPicker.DragSelection,
+            QwtPicker.AlwaysOff,
+            self.plot.canvas())
+        self.zoomer.setRubberBandPen(QPen(Qt.darkBlue))
+        self.zoomEnabled(False)
+        
+        
+        
+        QObject.connect(self.ui.zoomButton, SIGNAL("toggled(bool)"), self.zoomEnabled)
+        
         #setup plot
         #self.plot.setAxisTitle(QwtPlot.xBottom, "Time")
         self.plot.setAxisTitle(QwtPlot.yLeft, "Value")
@@ -74,18 +97,32 @@ class TimePlotWidget(QWidget):
             div.setTicks(QwtScaleDiv.MinorTick, [])
             div.setTicks(QwtScaleDiv.MediumTick, [])
             div.setTicks(QwtScaleDiv.MajorTick, ticks)
-            draw = TimeScaleDraw(QDateTime(self.main.timeMin))
+            baseTime = QDateTime(self.main.timeMin)
+            draw = TimeScaleDraw(baseTime)
             draw.setScaleDiv(div)
+            #self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
             self.plot.setAxisScaleDraw(QwtPlot.xBottom, draw)
             self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
-        
+            
+            self.picker.updateBaseTime(baseTime)
         #finally, refresh the plot
         self.plot.replot()
+        self.zoomer.setZoomBase() # reinitialize the scale
         
     def reset(self):
         self.plot.detachItems()
         self.plot.replot()
+        self.zoomer.setZoomBase() # reinitialize the scale
         
+    def zoomEnabled(self, on):
+        self.zoomer.setEnabled(on)
+        self.zoomer.zoom(0)
+
+        if on:
+            self.picker.setRubberBand(QwtPicker.NoRubberBand)
+        else:
+            self.picker.setRubberBand(QwtPicker.CrossRubberBand)
+
         
 class TimeScaleDraw(QwtScaleDraw):
     def __init__(self, baseTime):
@@ -99,4 +136,25 @@ class TimeScaleDraw(QwtScaleDraw):
         upTime = self.baseTime.addSecs(secs)
         upTime = upTime.toString('dd MM yy hh:mm:ss')
         return QwtText(upTime)
+
+class TimeScalePicker(QwtPlotPicker):
+    def __init__(self, xAxis, yAxis, selectionFlags, rubberBand, trackerMode, QwtPlotCanvas ):
+        QwtPlotPicker.__init__(self, xAxis, yAxis, selectionFlags, rubberBand, trackerMode, QwtPlotCanvas)
+        self.baseTime = QDateTime()
+        
+    def updateBaseTime(self, baseTime):
+        self.baseTime = baseTime
+        
+    def trackerText (self, pos):
+        upTime = self.baseTime.addSecs(pos.x())
+        upTime = upTime.toString('dd MM yy hh:mm:ss')
+        text = QwtText(upTime + " || " + str(pos.y()))
+        bgColor = QColor(Qt.white)
+        bgColor.setAlpha(127)
+        text.setBackgroundBrush(QBrush(bgColor))
+        return text
+    
+    
+    
+    
     
