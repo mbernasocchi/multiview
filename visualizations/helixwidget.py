@@ -31,12 +31,13 @@ from ui_helixwidget import Ui_HelixWidget
 
 # create the dialog for zoom to point
 class HelixWidget(QWidget):
-    def __init__(self, main):
+    def __init__(self, mainWidget, main):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_HelixWidget()
         self.ui.setupUi(self)
-        self.main = main
+        self.main = main #main plugin file
+        self.mainWidget = mainWidget #multiview widget
         
     def name(self):
         return "Helix"

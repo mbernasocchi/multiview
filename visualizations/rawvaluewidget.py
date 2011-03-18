@@ -25,17 +25,18 @@ from ui_rawvaluewidget import Ui_RawValueWidget
 
 # create the dialog for zoom to point
 class RawValueWidget(QWidget):
-    def __init__(self, main):
+    def __init__(self, mainWidget, main):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_RawValueWidget()
         self.ui.setupUi(self)
-        self.main = main
+        self.main = main #main plugin file
+        self.mainWidget = mainWidget #multiview widget
     
     def name(self):
         return "Raw Values"
     
-    def redraw(self, values):
+    def redraw(self, values, recalculateBonds=True):
         self.ui.display.setText(str(values))
         
     def reset(self):

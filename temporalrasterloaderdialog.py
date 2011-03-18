@@ -68,7 +68,6 @@ class TemporalRasterLoaderDialog(QDialog):
             #re to remove all non digit
             onlyDigits = re.compile(r'[^\d]+')
             
-            stepDurations = {}
             layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), self.timeFormat)
             
             for filePath in self.files:
@@ -82,8 +81,8 @@ class TemporalRasterLoaderDialog(QDialog):
                 stepNumber   = int(onlyDigits.sub('', str(stepNumberText)))
                 stepDurationText = intervalSearchPattern.search(fileBaseName)
                 stepDurationText = stepDurationText.group()
-                if stepDurationText in stepDurations.keys():
-                    stepDuration = stepDurations[stepDurationText]
+                if stepDurationText in self.main.stepDurations.keys():
+                    stepDuration = self.main.stepDurations[stepDurationText]
                 else:
                     dlg = StepDurationDialog(stepDurationText)
                     # show the dialog
@@ -92,7 +91,7 @@ class TemporalRasterLoaderDialog(QDialog):
                     if dlg.exec_():
                       stepDuration = int(dlg.ui.input.text())
                       stepDuration = timedelta(seconds=stepDuration)
-                      stepDurations[stepDurationText] = stepDuration
+                      self.main.stepDurations[stepDurationText] = stepDuration
                     else:
                         self.printToResult("ABORTED by user when entering " + stepDurationText + " duration")
                         break
@@ -154,6 +153,7 @@ class TemporalRasterLoaderDialog(QDialog):
             self.printToResult("End: " + str(importEndTime))
             self.printToResult("Duration: " + str(importEndTime - importStartTime))
             self.main.isLoadingTemporalData = False
+            self.main.writeStepDurations()
             try:
                 self.main.multiviewwidget.refreshAll()
             except:

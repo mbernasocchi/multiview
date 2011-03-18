@@ -22,6 +22,8 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+import pickle
+
 # Initialize Qt resources from file resources.py
 import resources_rc
 # Import the code for the widget
@@ -35,8 +37,10 @@ class MultiView:
         self.iface = iface
         self.mapCanvas = iface.mapCanvas()
         self.mainWindow = iface.mainWindow()
+        self.proj = QgsProject.instance()
         self.timeFormat = "%Y-%m-%d %H:%M:%S"
         self.isLoadingTemporalData = False
+        self.stepDurations = {}
 
     def initGui(self):
         # Create action that will start plugin
@@ -53,6 +57,9 @@ class MultiView:
         self.iface.addPluginToMenu("&Analyses", self.runAction)
         self.iface.addToolBarIcon(self.loadDataAction)
         self.iface.addPluginToMenu("&Analyses", self.loadDataAction)
+        
+        QObject.connect(self.iface, SIGNAL("projectRead()"), self.readStepDurations)
+        QObject.connect(self.iface, SIGNAL("newProjectCreated()"), self.readStepDurations)
         
     def unload(self):
         # Remove the plugin menu item and icon
@@ -85,3 +92,13 @@ class MultiView:
         self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface, self)
         # show the dialog
         self.temporalRasterLoader.show()
+        
+    def readStepDurations(self):
+        self.stepDurations = {}
+        stepDurations, projHasStepDurations = self.proj.readEntry("MultiView", "stepDurations")
+        if projHasStepDurations:
+            self.stepDurations = pickle.loads(str(stepDurations))
+
+    def writeStepDurations(self):
+        out = pickle.dumps(self.stepDurations)
+        self.proj.writeEntry("MultiView", "stepDurations", out)

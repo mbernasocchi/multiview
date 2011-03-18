@@ -31,14 +31,18 @@ from ui_timeplotwidget import Ui_TimePlotWidget
 
 # create the dialog for zoom to point
 class TimePlotWidget(QWidget):
-    def __init__(self, main):
+    def __init__(self, mainWidget, main):
         QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_TimePlotWidget()
         self.ui.setupUi(self)
-        self.main = main
+        self.main = main #main plugin file
+        self.mainWidget = mainWidget #multiview widget
         self.timeFormat = self.main.timeFormat
         self.plot = self.ui.qwtPlot
+        self.isFirstRedraw = True
+        
+        print "pr: "+ self.plot.grabProperties()
         
         self.picker = TimeScalePicker(
             QwtPlot.xBottom,
@@ -59,20 +63,18 @@ class TimePlotWidget(QWidget):
         self.zoomer.setRubberBandPen(QPen(Qt.darkBlue))
         self.zoomEnabled(False)
         
-        
-        
         QObject.connect(self.ui.zoomButton, SIGNAL("toggled(bool)"), self.zoomEnabled)
         
         #setup plot
-        #self.plot.setAxisTitle(QwtPlot.xBottom, "Time")
         self.plot.setAxisTitle(QwtPlot.yLeft, "Value")
     
     def name(self):
         return "TimePlot"
     
-    def redraw(self, valuesArray):
+    def redraw(self, valuesArray, recalculateBonds=True):
         self.reset()
         ticks = []
+        
         #add curves
         for (layerGroupName, values) in valuesArray.iteritems():
             x = []
@@ -81,7 +83,7 @@ class TimePlotWidget(QWidget):
                 x.append(value[0])
                 y.append(value[1])
             
-            color = self.main.colors[QString(layerGroupName)]
+            color = self.mainWidget.colors[QString(layerGroupName)]
             curve = QwtPlotCurve(layerGroupName)
             curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
             curve.setPen(QPen(color))   
@@ -89,7 +91,11 @@ class TimePlotWidget(QWidget):
             curve.attach(self.plot)
             ticks = list(set.union(set(ticks), set(x)))
         
-        if len(ticks) > 0:
+        if len(ticks) > 0 and self.isFirstRedraw:
+            #init zoom base
+            self.zoomer.setZoomBase()
+            
+        if len(ticks) > 0 and (self.isFirstRedraw or recalculateBonds):
             ticks.sort()
             #update axes
             div = QwtScaleDiv()
@@ -97,30 +103,36 @@ class TimePlotWidget(QWidget):
             div.setTicks(QwtScaleDiv.MinorTick, [])
             div.setTicks(QwtScaleDiv.MediumTick, [])
             div.setTicks(QwtScaleDiv.MajorTick, ticks)
-            baseTime = QDateTime(self.main.timeMin)
+            baseTime = QDateTime(self.mainWidget.timeMin)
             draw = TimeScaleDraw(baseTime)
             draw.setScaleDiv(div)
             #self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
             self.plot.setAxisScaleDraw(QwtPlot.xBottom, draw)
-            self.plot.setAxisScale(QwtPlot.yLeft, self.main.valueMin, self.main.valueMax)
+            self.plot.setAxisScale(QwtPlot.yLeft, self.mainWidget.valueMin, self.mainWidget.valueMax)
             
+            # reinitialize the scale
             self.picker.updateBaseTime(baseTime)
+            #update zoom base
+            tl = QPointF(min(ticks), self.mainWidget.valueMax)
+            br = QPointF(max(ticks), self.mainWidget.valueMin)
+            self.zoomer.setZoomBase(QRectF(tl, br)) 
         #finally, refresh the plot
+        print self.zoomer.zoomBase()
+        self.isFirstRedraw = False
         self.plot.replot()
-        self.zoomer.setZoomBase() # reinitialize the scale
+        
         
     def reset(self):
         self.plot.detachItems()
         self.plot.replot()
-        self.zoomer.setZoomBase() # reinitialize the scale
-        
+    
     def zoomEnabled(self, on):
         self.zoomer.setEnabled(on)
-        self.zoomer.zoom(0)
-
+        
         if on:
             self.picker.setRubberBand(QwtPicker.NoRubberBand)
         else:
+            self.zoomer.zoom(0)
             self.picker.setRubberBand(QwtPicker.CrossRubberBand)
 
         
@@ -145,7 +157,8 @@ class TimeScalePicker(QwtPlotPicker):
     def updateBaseTime(self, baseTime):
         self.baseTime = baseTime
         
-    def trackerText (self, pos):
+    def trackerText (self, clickPos):
+        pos = self.invTransform(clickPos)
         upTime = self.baseTime.addSecs(pos.x())
         upTime = upTime.toString('dd MM yy hh:mm:ss')
         text = QwtText(upTime + " || " + str(pos.y()))

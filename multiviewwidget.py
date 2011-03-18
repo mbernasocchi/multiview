@@ -50,12 +50,12 @@ class MultiViewWidget(QDialog):
         self.mapCanvas = self.iface.mapCanvas()
         self.legend = self.iface.legendInterface()
         self.mapTool = self.mapCanvas.mapTool()
-        self.proj = QgsProject.instance()
+#        self.proj = QgsProject.instance()
         self.main = main
-        self.timeFormat = self.main.timeFormat
         
         #create visualizations
-        self.visualizations = [TimePlotWidget(self), HelixWidget(self), RawValueWidget(self)]
+        #to add a viz type just instantiate it here (have a look at RawValueWidget to see what to implement)
+        self.visualizations = [TimePlotWidget(self, main), HelixWidget(self, main), RawValueWidget(self, main)]
         for v in self.visualizations:
             self.ui.visualizations.addTab(v, v.name())
         self.selectedVisualization = self.visualizations[0] 
@@ -96,7 +96,7 @@ class MultiViewWidget(QDialog):
         #a layer has been clicked
         QObject.connect(self.ui.availableVariablesGroup, SIGNAL("buttonClicked( QAbstractButton * )"), self.updateMultiVariables)
         
-        self.redraw()
+        self.redraw(False)
     
     #runs just before the widget is closed
     def closeEvent(self, event):
@@ -125,9 +125,9 @@ class MultiViewWidget(QDialog):
             except:
                 QMessageBox.warning(self.mainWindow, "Turn OFF exception",
                     "It seems that you have layers that have not unique names [layername: " + varName + "]")
-        self.redraw()
+        self.redraw(True)
     
-    def redraw(self):
+    def redraw(self, recalculateBonds=True):
         if len(self.activatedVariables) is 0:
             self.ui.warningDisplay.setText("<font color='red'>please select at least a variable</font>")
             self.selectedVisualization.reset()
@@ -136,7 +136,7 @@ class MultiViewWidget(QDialog):
             self.selectedVisualization.reset()
         else:
             self.ui.warningDisplay.setText("")
-            self.selectedVisualization.redraw(self.drill())
+            self.selectedVisualization.redraw(self.drill(), recalculateBonds)
         
     def drill(self):
         groups = self.legend.groupLayerRelationship()
@@ -144,7 +144,7 @@ class MultiViewWidget(QDialog):
         self.valueMin = sys.maxint
         self.valueMax = -sys.maxint
         self.timeMin = datetime.max
-        self.timeMax = datetime.min
+#        self.timeMax = datetime.min
         
         #get time and values ranges
         for group in groups:
@@ -166,11 +166,11 @@ class MultiViewWidget(QDialog):
                             self.valueMin = layerValueMin
                         
                         #set max and min times
-                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat)
+                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat)
                         if layerTime < self.timeMin:
                             self.timeMin = layerTime
-                        elif layerTime > self.timeMax:
-                            self.timeMax = layerTime
+#                        elif layerTime > self.timeMax:
+#                            self.timeMax = layerTime
                         
         
         values = {}
@@ -191,8 +191,8 @@ class MultiViewWidget(QDialog):
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)
                             iteration = layer.customProperty("temporalRasterIteration").toInt()[0]
-                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.timeFormat) - self.timeMin
-                            #same as timeDelta = timedelta.total_seconds()
+                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat) - self.timeMin
+                            #same as timeDelta = timedelta.total_seconds() #available from python 2.7
                             timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
                             try:
                                 #skip NODATA
@@ -277,7 +277,7 @@ class MultiViewWidget(QDialog):
     
     def updateCoords(self, coords):
         self.coords = coords
-        self.redraw()
+        self.redraw(False)
     
     def updateCoordsMouse(self, point, mouseButton):
         if mouseButton == Qt.RightButton:
