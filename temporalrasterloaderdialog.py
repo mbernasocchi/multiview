@@ -50,12 +50,12 @@ class TemporalRasterLoaderDialog(QDialog):
         if filesCount > 0:
             self.main.isLoadingTemporalData = True
             
-            #TODO hack to generate the correct groups
-            tmpGroup = self.legend.addGroup("dummy group", False)
-            tmpLayer = QgsRasterLayer(self.files[0], "Dummy layer")
-            tmpLayer = QgsMapLayerRegistry.instance().addMapLayer(tmpLayer)
-            self.legend.moveLayer(tmpLayer, tmpGroup)
-            #END Hack
+#            #TODO hack to generate the correct groups
+#            tmpGroup = self.legend.addGroup("dummy group", False)
+#            tmpLayer = QgsRasterLayer(self.files[0], "Dummy layer")
+#            tmpLayer = QgsMapLayerRegistry.instance().addMapLayer(tmpLayer)
+#            self.legend.moveLayer(tmpLayer, tmpGroup)
+#            #END Hack
             
             i = 0.0
             importStartTime = datetime.now()
@@ -104,7 +104,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
-                    self.legend.addGroup(groupName, False)
+                    self.legend.addGroup(groupName, False, True )
                     self.printToResult("New group: " + groupName)
                     
                 #createLayer
@@ -143,11 +143,11 @@ class TemporalRasterLoaderDialog(QDialog):
                 else:
                     self.printToResult("Layer invalid : " + layerName + " of " + groupName + " -> ERROR")
              
-            #TODO hack to generate the correct groups
-            #BUG https://trac.osgeo.org/qgis/ticket/3263
-            QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
-            self.legend.removeGroup(tmpGroup)   
-            #END Hack
+#            #TODO hack to generate the correct groups
+#            #BUG https://trac.osgeo.org/qgis/ticket/3263
+#            QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
+#            self.legend.removeGroup(tmpGroup)   
+#            #END Hack
             
             importEndTime = datetime.now()
             self.printToResult("End: " + str(importEndTime))
