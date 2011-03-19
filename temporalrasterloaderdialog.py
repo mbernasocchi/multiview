@@ -36,6 +36,7 @@ class TemporalRasterLoaderDialog(QDialog):
         # Set up the user interface from Designer.
         self.ui = Ui_TemporalRasterLoaderDialog()
         self.ui.setupUi(self)
+        
         self.setWindowTitle("MultiView - Temporal Raster Loader")
         
         self.iface = iface
@@ -44,6 +45,8 @@ class TemporalRasterLoaderDialog(QDialog):
         self.legend = self.iface.legendInterface()
         self.main = main
         self.timeFormat = self.main.timeFormat
+        
+        #self.ui.startDatetime.setDisplayFormat(self.timeFormat['QDateTime'])
     
     def loadTemporalRasters(self):
         filesCount = len(self.files)
@@ -59,6 +62,7 @@ class TemporalRasterLoaderDialog(QDialog):
             
             i = 0.0
             importStartTime = datetime.now()
+            importStartTim2e = QDateTime.currentDateTime()
             self.printToResult("NEW IMPORT RUN\nStart: " + str(importStartTime))
             
             #re for the temporal format
@@ -68,7 +72,8 @@ class TemporalRasterLoaderDialog(QDialog):
             #re to remove all non digit
             onlyDigits = re.compile(r'[^\d]+')
             
-            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), self.timeFormat)
+            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), self.timeFormat['datetime'])
+            #layersStartDatetime = datetimeself.ui.startDatetime.dateTime()
             
             for filePath in self.files:
                 i += 1

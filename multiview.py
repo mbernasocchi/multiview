@@ -38,7 +38,14 @@ class MultiView:
         self.mapCanvas = iface.mapCanvas()
         self.mainWindow = iface.mainWindow()
         self.proj = QgsProject.instance()
-        self.timeFormat = "%Y-%m-%d %H:%M:%S"
+        
+        #datetime format string
+        self.timeFormat = {}
+        #http://doc.qt.nokia.com/4.7/qdatetime.html#toString
+        self.timeFormat['QDateTime'] = "yyyy-MM-dd HH:mm:ss"
+        #http://docs.python.org/library/datetime.html#strftime-strptime-behavior
+        self.timeFormat['datetime'] = "%Y-%m-%d %H:%M:%S"
+        
         self.isLoadingTemporalData = False
         self.stepDurations = {}
 

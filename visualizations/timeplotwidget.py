@@ -38,7 +38,6 @@ class TimePlotWidget(QWidget):
         self.ui.setupUi(self)
         self.main = main #main plugin file
         self.mainWidget = mainWidget #multiview widget
-        self.timeFormat = self.main.timeFormat
         self.plot = self.ui.qwtPlot
         self.isFirstRedraw = True
         

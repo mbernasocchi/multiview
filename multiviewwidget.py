@@ -166,7 +166,7 @@ class MultiViewWidget(QDialog):
                             self.valueMin = layerValueMin
                         
                         #set max and min times
-                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat)
+                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat['datetime'])
                         if layerTime < self.timeMin:
                             self.timeMin = layerTime
 #                        elif layerTime > self.timeMax:
@@ -191,7 +191,7 @@ class MultiViewWidget(QDialog):
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)
                             iteration = layer.customProperty("temporalRasterIteration").toInt()[0]
-                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat) - self.timeMin
+                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat['datetime']) - self.timeMin
                             #same as timeDelta = timedelta.total_seconds() #available from python 2.7
                             timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
                             try:
