@@ -341,4 +341,8 @@ class MultiViewWidget(QDialog):
                 
     @pyqtSlot()
     def on_closeButton_clicked(self):
-        self.close()            
+        try:
+            self.temporalRasterLoader.close()
+        except:
+            pass
+        self.close() 

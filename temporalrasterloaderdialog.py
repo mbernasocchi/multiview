@@ -161,7 +161,11 @@ class TemporalRasterLoaderDialog(QDialog):
                 pass
         
     def printToResult(self, text):
-        self.ui.results.setText(self.ui.results.toPlainText() + "\n" + text)
+        if self.ui.results.toPlainText().isEmpty():
+            self.ui.results.setText(text)
+        else:
+            self.ui.results.setText(self.ui.results.toPlainText() + "\n" + text)
+        
         self.ui.results.verticalScrollBar().setValue(self.ui.results.verticalScrollBar().maximum());
     
     @pyqtSlot()
@@ -173,6 +177,14 @@ class TemporalRasterLoaderDialog(QDialog):
                          "/home/marco/master/data/wallisWGS/testData",
                          "GDAL files (*.dem *.tif *.tiff *.jpg *.jpeg *.asc);;All files (*.*)")
         self.loadTemporalRasters()
+    
+    @pyqtSlot()
+    def on_saveLogButton_clicked(self):
+        file = QFileDialog.getSaveFileName(self, "Save As...")
+        if not file.isEmpty():
+            file = open(file, 'w')
+            file.write(self.ui.results.toPlainText())
+            file.close()
     
     @pyqtSlot()
     def on_closeButton_clicked(self):

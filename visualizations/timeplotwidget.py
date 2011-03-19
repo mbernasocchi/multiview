@@ -41,8 +41,6 @@ class TimePlotWidget(QWidget):
         self.plot = self.ui.qwtPlot
         self.isFirstRedraw = True
         
-        print "pr: "+ self.plot.grabProperties()
-        
         self.picker = TimeScalePicker(
             QwtPlot.xBottom,
             QwtPlot.yLeft,
