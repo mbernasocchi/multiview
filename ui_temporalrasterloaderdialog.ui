@@ -101,14 +101,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="startDatetime">
-        <property name="text">
-         <string>2000-12-31 23:50:00</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDateTimeEdit" name="startDatetimeNEW">
+       <widget class="QDateTimeEdit" name="startDatetime">
         <property name="dateTime">
          <datetime>
           <hour>0</hour>

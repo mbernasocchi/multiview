@@ -25,7 +25,6 @@ from qgis.core import *
 from qgis.gui import *
 from panemitmaptool import PanEmitMapTool
 
-from datetime import datetime, timedelta
 import sys
 
 from ui_multiview import Ui_MultiView
@@ -143,8 +142,7 @@ class MultiViewWidget(QDialog):
         
         self.valueMin = sys.maxint
         self.valueMax = -sys.maxint
-        self.timeMin = datetime.max
-#        self.timeMax = datetime.min
+        self.timeMin = QDateTime()
         
         #get time and values ranges
         for group in groups:
@@ -166,11 +164,13 @@ class MultiViewWidget(QDialog):
                             self.valueMin = layerValueMin
                         
                         #set max and min times
-                        layerTime =  datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat['datetime'])
-                        if layerTime < self.timeMin:
+                        layerTime =  QDateTime.fromString(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat)
+                        
+                        if self.timeMin.isNull():
                             self.timeMin = layerTime
-#                        elif layerTime > self.timeMax:
-#                            self.timeMax = layerTime
+                            
+                        elif layerTime < self.timeMin:
+                            self.timeMin = layerTime
                         
         
         values = {}
@@ -191,9 +191,10 @@ class MultiViewWidget(QDialog):
                         if self.pointInExtent(self.coords, extent):
                             ident = layer.identify(self.coords)
                             iteration = layer.customProperty("temporalRasterIteration").toInt()[0]
-                            timeDelta = datetime.strptime(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat['datetime']) - self.timeMin
-                            #same as timeDelta = timedelta.total_seconds() #available from python 2.7
-                            timeDelta = (timeDelta.microseconds + (timeDelta.seconds + timeDelta.days * 24 * 3600) * 10**6) / 10**6
+                            
+                            layerTime = QDateTime.fromString(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat)
+                            timeDelta = self.timeMin.secsTo(layerTime) 
+
                             try:
                                 #skip NODATA
                                 value = float(ident[1].values()[0])

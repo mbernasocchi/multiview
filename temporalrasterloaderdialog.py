@@ -22,7 +22,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from datetime import datetime, timedelta
 import re
 
 from stepdurationdialog import StepDurationDialog
@@ -46,7 +45,7 @@ class TemporalRasterLoaderDialog(QDialog):
         self.main = main
         self.timeFormat = self.main.timeFormat
         
-        #self.ui.startDatetime.setDisplayFormat(self.timeFormat['QDateTime'])
+        self.ui.startDatetime.setDisplayFormat(self.timeFormat)
     
     def loadTemporalRasters(self):
         filesCount = len(self.files)
@@ -61,9 +60,8 @@ class TemporalRasterLoaderDialog(QDialog):
 #            #END Hack
             
             i = 0.0
-            importStartTime = datetime.now()
-            importStartTim2e = QDateTime.currentDateTime()
-            self.printToResult("NEW IMPORT RUN\nStart: " + str(importStartTime))
+            importStartTime = QDateTime.currentDateTime()
+            self.printToResult("NEW IMPORT RUN\nStart: " + importStartTime.toString(self.timeFormat))
             
             #re for the temporal format
             temporalSearchPattern = re.compile(str(self.ui.temporalRegEx.text()))
@@ -72,8 +70,7 @@ class TemporalRasterLoaderDialog(QDialog):
             #re to remove all non digit
             onlyDigits = re.compile(r'[^\d]+')
             
-            layersStartDatetime = datetime.strptime(str(self.ui.startDatetime.text()), self.timeFormat['datetime'])
-            #layersStartDatetime = datetimeself.ui.startDatetime.dateTime()
+            layersStartDatetime = self.ui.startDatetime.dateTime()
             
             for filePath in self.files:
                 i += 1
@@ -95,7 +92,7 @@ class TemporalRasterLoaderDialog(QDialog):
                     # See if OK was pressed
                     if dlg.exec_():
                       stepDuration = int(dlg.ui.input.text())
-                      stepDuration = timedelta(seconds=stepDuration)
+                      stepDuration = stepDuration
                       self.main.stepDurations[stepDurationText] = stepDuration
                     else:
                         self.printToResult("ABORTED by user when entering " + stepDurationText + " duration")
@@ -105,7 +102,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 groupName = variableInfo + stepDurationText
                 layerName = str(stepNumber)
-                layerTime = layersStartDatetime + ( stepDuration *  (stepNumber - 1) )
+                layerTime = layersStartDatetime.addSecs( (stepDuration *  (stepNumber - 1)) )
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
@@ -117,7 +114,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 #set time properties
                 layer.setCustomProperty("isTemporalRaster", True)
                 layer.setCustomProperty("temporalRasterIteration", layerName)
-                layer.setCustomProperty("temporalRasterTime", str(layerTime))
+                layer.setCustomProperty("temporalRasterTime", layerTime.toString(self.timeFormat))
                 
                 #set symbology to pseudocolors
                 layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
@@ -128,7 +125,6 @@ class TemporalRasterLoaderDialog(QDialog):
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
                     self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
-                    
                     
                     #get the current group index
                     groups = []
@@ -142,9 +138,9 @@ class TemporalRasterLoaderDialog(QDialog):
                     
                     if self.legend.groupExists(groupIndex):
                         self.legend.moveLayer(layer, groupIndex)
-                        self.printToResult("Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
+                        #self.printToResult("Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
                     else:
-                        self.printToResult("NOT Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
+                        self.printToResult("Moving : " + fileBaseName + " to " + groupName + "(i " + str(groupIndex) + ")/" + layerName + " -> " + layerWasAdded)
                 else:
                     self.printToResult("Layer invalid : " + layerName + " of " + groupName + " -> ERROR")
              
@@ -154,9 +150,9 @@ class TemporalRasterLoaderDialog(QDialog):
 #            self.legend.removeGroup(tmpGroup)   
 #            #END Hack
             
-            importEndTime = datetime.now()
-            self.printToResult("End: " + str(importEndTime))
-            self.printToResult("Duration: " + str(importEndTime - importStartTime))
+            importEndTime = QDateTime.currentDateTime()
+            self.printToResult("End: " + importEndTime.toString(self.timeFormat))
+            self.printToResult("Duration: " + str(importStartTime.secsTo(importEndTime)) + " sec")
             self.main.isLoadingTemporalData = False
             self.main.writeStepDurations()
             try:
