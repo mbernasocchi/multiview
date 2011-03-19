@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_temporalrasterloaderdialog.ui'
 #
-# Created: Sat Mar 19 20:24:08 2011
+# Created: Sat Mar 19 22:27:09 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,6 +63,7 @@ class Ui_TemporalRasterLoaderDialog(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem1)
         self.saveLogButton = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.saveLogButton.setEnabled(False)
         self.saveLogButton.setObjectName("saveLogButton")
         self.horizontalLayout_4.addWidget(self.saveLogButton)
         self.closeButton = QtGui.QPushButton(self.verticalLayoutWidget)

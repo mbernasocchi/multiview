@@ -51,6 +51,7 @@ class TemporalRasterLoaderDialog(QDialog):
         filesCount = len(self.files)
         if filesCount > 0:
             self.main.isLoadingTemporalData = True
+            self.ui.saveLogButton.setEnabled(False)
             
 #            #TODO hack to generate the correct groups
 #            tmpGroup = self.legend.addGroup("dummy group", False)
@@ -154,6 +155,7 @@ class TemporalRasterLoaderDialog(QDialog):
             self.printToResult("End: " + importEndTime.toString(self.timeFormat))
             self.printToResult("Duration: " + str(importStartTime.secsTo(importEndTime)) + " sec")
             self.main.isLoadingTemporalData = False
+            self.ui.saveLogButton.setEnabled(True)
             self.main.writeStepDurations()
             try:
                 self.main.multiviewwidget.refreshAll()
