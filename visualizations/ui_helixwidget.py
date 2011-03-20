@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Tue Mar  8 23:39:13 2011
+# Created: Sun Mar 20 19:51:29 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,9 +13,6 @@ class Ui_HelixWidget(object):
     def setupUi(self, HelixWidget):
         HelixWidget.setObjectName("HelixWidget")
         HelixWidget.resize(425, 267)
-        self.calendarWidget = QtGui.QCalendarWidget(HelixWidget)
-        self.calendarWidget.setGeometry(QtCore.QRect(70, 40, 304, 179))
-        self.calendarWidget.setObjectName("calendarWidget")
 
         self.retranslateUi(HelixWidget)
         QtCore.QMetaObject.connectSlotsByName(HelixWidget)
