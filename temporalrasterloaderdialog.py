@@ -107,7 +107,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
-                    self.legend.addGroup(groupName, False, True )
+                    self.legend.addGroup(groupName, False )
                     self.printToResult("New group: " + groupName)
                     
                 #createLayer

@@ -108,24 +108,6 @@ class MultiViewWidget(QDialog):
         print "TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST-TEST"
         print str(text)
         
-    def updateMultiVariables(self, button):
-        #this assumes unique layerGroup names. the importer creates only unique groups
-        varName = button.text()
-        #variable has been turned ON
-        
-        if button.isChecked():
-            try:
-                self.activatedVariables.index(varName)
-            except:
-                self.activatedVariables.append(varName)
-        else:
-            try:
-                self.activatedVariables.remove(varName)
-            except:
-                QMessageBox.warning(self.mainWindow, "Turn OFF exception",
-                    "It seems that you have layers that have not unique names [layername: " + varName + "]")
-        self.redraw(True)
-    
     def redraw(self, recalculateBonds=True):
         if len(self.activatedVariables) is 0:
             self.ui.warningDisplay.setText("<font color='red'>please select at least a variable</font>")
@@ -233,6 +215,24 @@ class MultiViewWidget(QDialog):
         self.updateAvailableVariables()
         self.selectedVisualization.reset()
         
+    def updateMultiVariables(self, button):
+        #this assumes unique layerGroup names. the importer creates only unique groups
+        varName = button.objectName()
+        #variable has been turned ON
+        
+        if button.isChecked():
+            try:
+                self.activatedVariables.index(varName)
+            except:
+                self.activatedVariables.append(varName)
+        else:
+            try:
+                self.activatedVariables.remove(varName)
+            except:
+                QMessageBox.warning(self.mainWindow, "Turn OFF exception",
+                    "It seems that you have layers that have not unique names [layername: " + varName + "]")
+        self.redraw(True)
+    
     def updateAvailableVariables(self):
         if not self.main.isLoadingTemporalData:
             #clear the colors dictionary
@@ -259,8 +259,18 @@ class MultiViewWidget(QDialog):
                 if self.hasTemporalRasters(layerGroupName):
                     #create a legend color
                     self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 150, 255 )
-                    #create the checkbox
-                    cb = QCheckBox(layerGroupName)
+                    
+                    #create the checkbox label
+                    text = QString(layerGroupName)
+                    for name,duration in self.main.stepDurations.iteritems():
+                        if text.contains(name):
+                            text = text.replace(name, " - ("+str(duration)+" s)")
+                            break
+                    
+                    #create the checkbox  
+                    cb = QCheckBox(text)
+                    cb.setObjectName(layerGroupName)
+                    
                     self.ui.availableVariablesGroup.addButton(cb)
                     isOn = layerGroupName in self.activatedVariables 
                     cb.setChecked(bool(isOn))

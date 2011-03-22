@@ -82,8 +82,14 @@ class TimePlotWidget(QWidget):
             
             color = self.mainWidget.colors[QString(layerGroupName)]
             curve = QwtPlotCurve(layerGroupName)
-            curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(5,5)))
-            curve.setPen(QPen(color))   
+            pointSize = self.ui.pointSize.value()
+            curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(pointSize,pointSize)))
+            
+            pen = QPen(color)
+            pen.setWidth(self.ui.lineWidth.value())
+            pen.setDashOffset(self.ui.dashOffset.value())
+            pen.setDashPattern(eval(str(self.ui.dashPattern.text())))
+            curve.setPen(pen)   
             curve.setData(x, y)
             curve.attach(self.plot)
             ticks = list(set.union(set(ticks), set(x)))
@@ -131,7 +137,22 @@ class TimePlotWidget(QWidget):
         else:
             self.zoomer.zoom(0)
             self.picker.setRubberBand(QwtPicker.CrossRubberBand)
-
+            
+    @pyqtSlot(float)
+    def on_pointSize_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+    
+    @pyqtSlot(float)
+    def on_lineWidth_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+    
+    @pyqtSlot(float)
+    def on_dashOffset_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+        
+    @pyqtSlot(str)
+    def on_dashPattern_textChanged(self, value):
+        self.mainWidget.redraw(False)
         
 class TimeScaleDraw(QwtScaleDraw):
     def __init__(self, baseTime):
