@@ -1,4 +1,6 @@
-#Tue Mar 15 15:52:26 CET 2011
+#Thu Mar 24 09:16:04 CET 2011
 eclipse.preferences.version=1
+encoding//visualizations/ui_helixwidget.py=utf-8
+encoding//visualizations/ui_rawvaluewidget.py=utf-8
 encoding//visualizations/ui_timeplotwidget.py=utf-8
 encoding/ui_temporalrasterloaderdialog.py=utf-8

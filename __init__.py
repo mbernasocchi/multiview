@@ -24,12 +24,11 @@ def name():
 def description():
     return "This plugin allows analysis of multi temporal and multivariate datasets"
 def version():
-    return "Version 0.2"
+    return "Version 0.3"
 def icon():
     return "icon.png"
 def qgisMinimumVersion():
-    return "1.6"
-    #TODO change to 1.7
+    return "1.7"
 def classFactory(iface):
     # load MultiView class from file MultiView
     from multiview import MultiView

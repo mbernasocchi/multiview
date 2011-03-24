@@ -53,13 +53,6 @@ class TemporalRasterLoaderDialog(QDialog):
             self.main.isLoadingTemporalData = True
             self.ui.saveLogButton.setEnabled(False)
             
-#            #TODO hack to generate the correct groups
-#            tmpGroup = self.legend.addGroup("dummy group", False)
-#            tmpLayer = QgsRasterLayer(self.files[0], "Dummy layer")
-#            tmpLayer = QgsMapLayerRegistry.instance().addMapLayer(tmpLayer)
-#            self.legend.moveLayer(tmpLayer, tmpGroup)
-#            #END Hack
-            
             i = 0.0
             importStartTime = QDateTime.currentDateTime()
             self.printToResult("NEW IMPORT RUN\nStart: " + importStartTime.toString(self.timeFormat))
@@ -145,12 +138,6 @@ class TemporalRasterLoaderDialog(QDialog):
                 else:
                     self.printToResult("Layer invalid : " + layerName + " of " + groupName + " -> ERROR")
              
-#            #TODO hack to generate the correct groups
-#            #BUG https://trac.osgeo.org/qgis/ticket/3263
-#            QgsMapLayerRegistry.instance().removeMapLayer(tmpLayer.id())
-#            self.legend.removeGroup(tmpGroup)   
-#            #END Hack
-            
             importEndTime = QDateTime.currentDateTime()
             self.printToResult("End: " + importEndTime.toString(self.timeFormat))
             self.printToResult("Duration: " + str(importStartTime.secsTo(importEndTime)) + " sec")

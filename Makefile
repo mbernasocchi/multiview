@@ -44,6 +44,7 @@ res: $(RES_FILES)
 $(UI_FILES): $(UI_PATH)/%.py: $(UI_PATH)/%.ui
 	pyuic4 -o $@ $<
 	sed -i 's|from qwt_plot import QwtPlot|from PyQt4.Qwt5 import QwtPlot|g' $@
+	sed -i 's|from QGLViewer.qglviewer import QGLViewer|from PyQGLViewer import *|g' $@
 
 $(LANG_FILES): $(LANG_PATH)/%.qm: $(LANG_PATH)/%.ts
 	lrelease $< 

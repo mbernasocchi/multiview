@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Tue Mar 22 16:42:18 2011
+# Created: Tue Mar 22 16:58:21 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,7 +29,7 @@ class Ui_MultiView(object):
         self.title.setObjectName("title")
         self.controls.addWidget(self.title)
         self.availableVariablesContainer = QtGui.QScrollArea(MultiView)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.availableVariablesContainer.sizePolicy().hasHeightForWidth())
@@ -37,7 +37,7 @@ class Ui_MultiView(object):
         self.availableVariablesContainer.setWidgetResizable(True)
         self.availableVariablesContainer.setObjectName("availableVariablesContainer")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget(self.availableVariablesContainer)
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 82))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 199))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")

@@ -180,13 +180,16 @@ class MultiViewWidget(QDialog):
                             try:
                                 #skip NODATA
                                 value = float(ident[1].values()[0])
-                                groupValues.append([timeDelta, value])
+                                groupValues.append((timeDelta, value))
                             except:
                                 pass
                 groupValues.reverse()
-                values[groupName] = groupValues
-        return values
-
+                if groupValues:
+                    values[groupName] = groupValues
+        if values:
+            return values
+        else:
+            return None
 #    def readProjectActivatedVariables(self):
 #        #init the activated variables list
 #        try:
@@ -258,7 +261,7 @@ class MultiViewWidget(QDialog):
             for layerGroupName in self.legend.groups():
                 if self.hasTemporalRasters(layerGroupName):
                     #create a legend color
-                    self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 150, 255 )
+                    self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 255, 255 )
                     
                     #create the checkbox label
                     text = QString(layerGroupName)
@@ -282,6 +285,7 @@ class MultiViewWidget(QDialog):
                 
     def updateSelectedVisualization(self, index):
         self.selectedVisualization = self.visualizations[index]
+        self.redraw(True)
     
     def resetCoords(self):
           self.selectedVisualization.reset()

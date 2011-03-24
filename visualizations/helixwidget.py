@@ -20,152 +20,168 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from PyQt4.Qwt3D import *
-from PyQt4.Qwt3D.OpenGL import *
+import math
 
-import sys
-from math import log
-#try:
-#    from PyQt4.Qwt3D import *
-#except:
-#    print "PyQt4.Qwt3D needed for this visualization"
-#    print "please get it at http://qwtplot3d.sourceforge.net/"
+try:
+    from PyQGLViewer import *
+    from OpenGL.GL import *
+except:
+    raise ImportError("PyQGLViewer needed for this visualization \nplease get it at http://pyqglviewer.gforge.inria.fr")
+
+helpstr = """<h2>Helix V i e w e r</h2>
+Use the mouse to move the camera around the helix. 
+You can respectively revolve around, zoom and translate with the three mouse buttons. 
+Left and middle buttons pressed together rotate around the camera view direction axis<br><br>
+Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, 
+<b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. 
+See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>
+Double clicks automates single click actions: A left button double click aligns 
+the closer axis with the camera (if close enough). A middle button double click 
+fits the zoom of the camera and the right button re-centers the scene.<br><br>
+A left button double click while holding right button pressed defines the camera 
+<i>Revolve Around Point</i>.
+See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>
+Press <b>Escape</b> to exit the viewer."""
+
+
     
 from ui_helixwidget import Ui_HelixWidget
 
 # create the dialog for zoom to point
 class HelixWidget(QWidget):
     def __init__(self, mainWidget, main):
-        QDialog.__init__(self)
+        QWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_HelixWidget()
         self.ui.setupUi(self)
         self.main = main #main plugin file
         self.mainWidget = mainWidget #multiview widget
-        self.plot = SurfacePlot(self)
-        self.plot.setGeometry(QRect(10, 40, 341, 231))
         
-        
-        
-        
-            
-        self.plot.setTitle('A Simple SurfacePlot Demonstration');
-        self.plot.setBackgroundColor(RGBA(1.0, 1.0, 0.6))
-
-        rosenbrock = Rosenbrock(self.plot)
-
-        rosenbrock.setMesh(41, 31)
-        rosenbrock.setDomain(-1.73, 1.5, -1.5, 1.5)
-        rosenbrock.setMinZ(-10)
-        
-        rosenbrock.create()
-
-        self.plot.setRotation(30, 0, 15)
-        self.plot.setScale(1, 1, 1)
-        self.plot.setShift(0.15, 0, 0)
-        self.plot.setZoom(0.9)
-
-        axes = self.plot.coordinates().axes # alias
-        for axis in axes:
-            axis.setMajors(7)
-            axis.setMinors(4)
-            
-        axes[X1].setLabelString('x-axis')
-        axes[Y1].setLabelString('y-axis')
-        axes[Z1].setLabelString('z-axis')
-
-        self.plot.setCoordinateStyle(BOX);
-
-        self.plot.updateData();
-        self.plot.updateGL();
-
+        self.viewer = Viewer(self)
+        self.viewer.setObjectName("viewer")
+        self.ui.verticalLayout.addWidget(self.viewer)
         
     def name(self):
         return "Helix"
     
-    def redraw(self, values, recalculateBonds=True):
-        print str(values)
-        
-#            RenderingContext rc = getRenderingContext();
-#            // Draw Helix
-#            rc.gl.glEnable(GL.GL_BLEND);
-#            rc.gl.glEnable(GL.GL_DEPTH_TEST);
-#            rc.gl.glTranslated(a.getBounds().getCenterX(), a.getBounds().getCenterY(), 0);
-#
-#            rc.gl.glScalef(perimeter, perimeter, 1);
-#            rc.gl.glRotatef(rotationAngle, 0, 0, 1);
-#
-#            int data[][] = a.getData(this);
-#            if (data == null) return;
-#            int timeStepCount = data.length;
-#            int diagnosesCount = data[0].length;
-#
-#            float[] maxPerDiagnosis = new float[diagnosesCount];
-#            for (int d = 0; d < diagnosesCount; d++) {
-#                for (int i = 0; i < timeStepCount; i++) {
-#                    if (data[i][d] > maxPerDiagnosis[d]) maxPerDiagnosis[d] = data[i][d];
-#                }
-#            }
-#
-#            int quadsPerTimeStep = 1 + PRECISION / timeStepsPerCycle; // At least one quad per time step
-#            int quadsPerCycle = quadsPerTimeStep * timeStepsPerCycle;
-#
-#            float cycleCount = (float) timeStepCount / timeStepsPerCycle;
-#            float transparency = getMapView().getFadingManager().getTransparency(a);
-#            float ribbonHeight = height / (1 + cycleCount);
-#            float subRibbonHeight = ribbonHeight * ribbonScale / diagnosesCount;
-#
-#            // h = hs * ts * qt + rh
-#            // h - rh = hs * ts * qt
-#            // (h - rh)
-#            // ------ = hs
-#            // (ts * qt)
-#            float heightStepPerQuad = (height - ribbonHeight) / (timeStepCount * quadsPerTimeStep);
-#            float angleStepPerQuad = 360f / quadsPerCycle;
-#            float sin = (float) Math.sin(angleStepPerQuad * Math.PI / 180);
-#            float cos = (float) (-1 * Math.cos(angleStepPerQuad * Math.PI / 180));
-#
-#            rc.gl.glMatrixMode(GL.GL_MODELVIEW);
-#            for (int i = 0; i < timeStepCount; i++) {
-#                for (int j = 0; j < quadsPerTimeStep; j++) {
-#                    rc.gl.glPushMatrix();
-#                    for (int d = 0; d < diagnosesCount; d++) {
-#                        float t = data[i][d] / maxPerDiagnosis[d];
-#                        colorScales[d % colorScales.length].getColor(t).getColorComponents(rc.c);
-#                        rc.c[3] = transparency;
-#                        rc.gl.glColor4fv(rc.c, 0);
-#
-#                        rc.gl.glBegin(GL.GL_QUADS);
-#                        rc.gl.glVertex3f(0, -1, 0);
-#                        rc.gl.glVertex3f(0, -1, subRibbonHeight * subRibbonScale);
-#                        rc.gl.glVertex3f(sin, cos, subRibbonHeight * subRibbonScale + heightStepPerQuad);
-#                        rc.gl.glVertex3f(sin, cos, heightStepPerQuad);
-#                        rc.gl.glEnd();
-#
-#                        rc.gl.glTranslatef(0, 0, subRibbonHeight);
-#                    }
-#                    rc.gl.glPopMatrix();
-#                    rc.gl.glRotatef(angleStepPerQuad, 0, 0, 1);
-#                    rc.gl.glTranslatef(0, 0, heightStepPerQuad);
-#                }
-#            }
-#    }
+    def redraw(self, valuesArray, recalculateBonds=True):
+        self.viewer.setData(valuesArray)
         
     def reset(self):
-        print "reset"
+        pass
+    
+    
+class Viewer(QGLViewer):
+    def __init__(self, parent):
+        QGLViewer.__init__(self)
         
-class Rosenbrock(Function):
+        #config
+        self.mainWidget = parent.mainWidget
+        self.data = None
+        self.PRECISION = 30
+        self.timeStepsPerCycle = 1
+        self.height = 400
+        self.ribbonScale = 0.8
+        self.subRibbonScale = 30
+    
+    
+    def init(self):
+        """OpenGL init, happens only once"""
+#        self.setSceneRadius(100.0)          # scene has a 100 OpenGL units radius 
+#        self.setSceneCenter( Vec(400,0,0) ) # with a center shifted by 400 units along X direction
+#        self.camera().showEntireScene()
 
-    def __init__(self, *args):
-        Function.__init__(self, *args)
-
-    # __init__()
-
-    def __call__(self, x, y):
-        return log((1-x)*(1-x) + 100*(y-x*x)*(y-x*x)) / 8
-
-    # __call__()
-
-# class Rosenbrock
-
+    def helpString(self):
+        return helpstr
         
+    def setData(self, data):
+        self.data = data
+        self.updateGL()
+    def draw(self):
+#        nbSteps = 10
+#        nbSub = 20
+#        for n in range(0, nbSub):
+#            gl.glBegin(gl.GL_QUAD_STRIP)
+#            for i in range(0,int(nbSteps)):
+#                ratio = i/float(nbSteps)
+#                angle = 21.0*ratio
+#                c = math.cos(angle)
+#                s = math.sin(angle)
+#                radius = 1.0 - 0.5*ratio            
+#                center = Vec(radius*c, ratio-0.5, radius*s)
+#    
+#                for j in range(0,2):
+#                    nj = float(n+j)
+#                    delta = 3.0*nj/nbSub
+#                    cdelta = math.cos(delta)
+#                    shift = Vec(c*cdelta, math.sin(delta), s*cdelta)
+#                    gl.glColor3f(1-ratio, nj/nbSub , ratio)
+#                    gl.glNormal3fv(list(shift))
+#                    gl.glVertex3fv(list(center+shift*0.2))
+#            gl.glEnd()
+        '''Drawing routine'''
+        # Draw Helix
+        if (self.data == None):
+            print "no data yet"
+            return
+        
+        data = []
+        maxPerVariable = []
+        timeCounts  = []
+        colors = []
+        for (layerGroupName, values) in self.data.iteritems():
+            timeCounts.append(len(values))
+            x, y = zip(*values)
+            maxPerVariable.append(max(y))
+            data.append(y)
+            color = self.mainWidget.colors[QString(layerGroupName)]
+            color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
+            colors.append(color)
+        
+        variablesCount = len(self.data)
+        timeStepCount = max(timeCounts)
+        
+        #prepare ribbons values
+        quadsPerTimeStep = 1 + self.PRECISION / self.timeStepsPerCycle # At least one quad per time step
+        quadsPerCycle = quadsPerTimeStep * self.timeStepsPerCycle
+        cycleCount = float( timeStepCount / self.timeStepsPerCycle )
+        #transparency = getMapView().getFadingManager().getTransparency(a)
+        ribbonHeight = self.height / (1 + cycleCount)
+        subRibbonHeight = ribbonHeight * self.ribbonScale / variablesCount
+        # h = hs * ts * qt + rh
+        # h - rh = hs * ts * qt
+        # (h - rh)
+        # ------ = hs
+        # (ts * qt)
+        heightStepPerQuad = (self.height - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
+        angleStepPerQuad = 360.0 / quadsPerCycle
+        sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
+        cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
+        
+        glMatrixMode(GL_MODELVIEW)
+        for t in range(0, timeStepCount):
+            for j in range(0, quadsPerTimeStep):
+                glPushMatrix()
+                for v in range(0, variablesCount):
+                    try:#avoid division by 0
+                        sat = data[v][t] / maxPerVariable[v]
+                    except:
+                        sat = 0
+                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+                    print v, t, data[v][t], sat, color.saturation()
+                    #rc.c[3] = transparency
+                    glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+                
+                    glBegin(GL_QUADS)
+                    glVertex3f(0, -1, 0)
+                    glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
+                    glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
+                    glVertex3f(sin, cos, heightStepPerQuad)
+                    glEnd()
+                
+                    glTranslatef(0, 0, subRibbonHeight)
+                glPopMatrix()
+                glRotatef(angleStepPerQuad, 0, 0, 1)
+                glTranslatef(0, 0, heightStepPerQuad)
+
+    

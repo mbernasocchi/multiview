@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_timeplotwidget.ui'
 #
-# Created: Tue Mar 22 16:22:55 2011
+# Created: Tue Mar 22 17:24:59 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,7 +79,11 @@ class Ui_TimePlotWidget(object):
         self.label_3.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "Offset for the start of the dash pattern", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("TimePlotWidget", "Dash offset", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "use an array in this format: [dash, space, dash, space,...]", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("TimePlotWidget", "Dash pattern<img src=\"info.png\" />", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("TimePlotWidget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Dash pattern <img src=\":/plugins/multiview/images/info.png\" /></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.dashOffset.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "Offset for the start of the dash pattern", None, QtGui.QApplication.UnicodeUTF8))
         self.dashPattern.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "use an array in this format: [dash, space, dash, space,...]", None, QtGui.QApplication.UnicodeUTF8))
         self.dashPattern.setText(QtGui.QApplication.translate("TimePlotWidget", "[1,1]", None, QtGui.QApplication.UnicodeUTF8))

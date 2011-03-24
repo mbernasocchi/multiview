@@ -26,7 +26,7 @@ from ui_rawvaluewidget import Ui_RawValueWidget
 # create the dialog for zoom to point
 class RawValueWidget(QWidget):
     def __init__(self, mainWidget, main):
-        QDialog.__init__(self)
+        QWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_RawValueWidget()
         self.ui.setupUi(self)

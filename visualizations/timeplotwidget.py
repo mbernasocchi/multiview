@@ -21,18 +21,17 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-hasqwt = True
 try:
-    from PyQt4.Qwt5 import *
+    from PyQt4.Qwt5  import *
 except:
-    hasqwt = False
+    raise ImportError("PyQt4.Qwt5 needed for this visualization \nPlease get it at http://pyqwt.sourceforge.net")
     
 from ui_timeplotwidget import Ui_TimePlotWidget
 
 # create the dialog for zoom to point
 class TimePlotWidget(QWidget):
     def __init__(self, mainWidget, main):
-        QDialog.__init__(self)
+        QWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_TimePlotWidget()
         self.ui.setupUi(self)
@@ -70,6 +69,9 @@ class TimePlotWidget(QWidget):
     
     def redraw(self, valuesArray, recalculateBonds=True):
         self.reset()
+        if valuesArray is None:
+            return
+        
         ticks = []
         
         #add curves
@@ -120,7 +122,6 @@ class TimePlotWidget(QWidget):
             br = QPointF(max(ticks), self.mainWidget.valueMin)
             self.zoomer.setZoomBase(QRectF(tl, br)) 
         #finally, refresh the plot
-        print self.zoomer.zoomBase()
         self.isFirstRedraw = False
         self.plot.replot()
         
