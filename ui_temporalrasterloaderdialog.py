@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_temporalrasterloaderdialog.ui'
 #
-# Created: Fri Mar 25 01:34:54 2011
+# Created: Fri Mar 25 11:05:51 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -91,7 +91,7 @@ class Ui_TemporalRasterLoaderDialog(object):
         self.loadDataButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Choose and Load", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Start date:", None, QtGui.QApplication.UnicodeUTF8))
         self.startDatetime.setDisplayFormat(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "yyyy-MM-dd HH:mm:ss", None, QtGui.QApplication.UnicodeUTF8))
-        self.dataVisible.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Show all data after load", None, QtGui.QApplication.UnicodeUTF8))
+        self.dataVisible.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Show all data after load (slow)", None, QtGui.QApplication.UnicodeUTF8))
         self.saveLogButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Save Log", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("TemporalRasterLoaderDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

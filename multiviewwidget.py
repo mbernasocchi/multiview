@@ -353,6 +353,10 @@ class MultiViewWidget(QDialog):
         self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface, self.main)
         # show the dialog
         self.temporalRasterLoader.show()
+      
+    @pyqtSlot()
+    def on_manualRefreshButton_clicked(self):
+        self.refreshAll()
         
     @pyqtSlot()
     def on_helpButton_clicked(self):

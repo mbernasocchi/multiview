@@ -109,6 +109,13 @@
          <item>
           <layout class="QVBoxLayout" name="buttons">
            <item>
+            <widget class="QPushButton" name="manualRefreshButton">
+             <property name="text">
+              <string>Refresh List</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="loadDataButton">
              <property name="text">
               <string>Load Data ...</string>

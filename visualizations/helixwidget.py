@@ -51,7 +51,7 @@ class HelixWidget(QWidget):
         self.viewer.setData(valuesArray)
         
     def reset(self):
-        pass
+        self.viewer.setData(None)
     
     def help(self):
         self.viewer.help()
@@ -64,12 +64,13 @@ class Viewer(QGLViewer):
         #config
         self.mainWidget = parent.mainWidget
         self.data = None
-        self.PRECISION = 30
-        self.timeStepsPerCycle = 7
+        self.PRECISION = 40
+        self.timeStepsPerCycle = 4
         self.height = 400
         self.ribbonScale = 0.8
         self.subRibbonScale = 30
         self.minSaturation = 0.25
+        self.nodataColor = QColor.fromHsvF(0.0, 0.0, 0.75, 0.0)
     
     
     def init(self):
@@ -84,28 +85,8 @@ class Viewer(QGLViewer):
     def setData(self, data):
         self.data = data
         self.updateGL()
+        
     def draw(self):
-#        nbSteps = 10
-#        nbSub = 20
-#        for n in range(0, nbSub):
-#            gl.glBegin(gl.GL_QUAD_STRIP)
-#            for i in range(0,int(nbSteps)):
-#                ratio = i/float(nbSteps)
-#                angle = 21.0*ratio
-#                c = math.cos(angle)
-#                s = math.sin(angle)
-#                radius = 1.0 - 0.5*ratio            
-#                center = Vec(radius*c, ratio-0.5, radius*s)
-#    
-#                for j in range(0,2):
-#                    nj = float(n+j)
-#                    delta = 3.0*nj/nbSub
-#                    cdelta = math.cos(delta)
-#                    shift = Vec(c*cdelta, math.sin(delta), s*cdelta)
-#                    gl.glColor3f(1-ratio, nj/nbSub , ratio)
-#                    gl.glNormal3fv(list(shift))
-#                    gl.glVertex3fv(list(center+shift*0.2))
-#            gl.glEnd()
         '''Drawing routine'''
         # Draw Helix
         if (self.data == None):
@@ -148,12 +129,10 @@ class Viewer(QGLViewer):
         cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
         
         
-        nbSteps = timeStepCount
-        nbSub = variablesCount
-        for v in range(0, nbSub):
+        for v in range(0, variablesCount):
             glBegin(GL_QUAD_STRIP)
-            for t in range(0,int(nbSteps)):
-                ratio = t/float(nbSteps)
+            for t in range(0,int(timeStepCount)):
+                ratio = t/float(timeStepCount)
                 angle = angleStepPerQuad*ratio
                 c = math.cos(angle)
                 s = math.sin(angle)
@@ -162,55 +141,58 @@ class Viewer(QGLViewer):
     
                 for j in range(0,2):
                     nj = float(v+j)
-                    delta = 3*nj/nbSub
+                    delta = 3*nj/variablesCount
                     cdelta = math.cos(delta)
                     shift = Vec(c*cdelta, math.sin(delta), s*cdelta)
                     
-                    
-                    try:#avoid division by 0
-                        #normalizing values to 0-1 range
+                    try:
+                        #avoid division by 0 and normalizing values to 0-1 range
                         if variableRange[v]['min'] > 0:
                             sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
                         else:
                             sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-                        
+                            
+                        #add minSaturation
                         sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
                         color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
                     except:
-                       color = QColor.fromHsvF(colors[v].hueF(), 0.0, 0.75, 0.0)
+                        #color for NODATA
+                        color = self.nodataColor 
                         
+                       
+                    #setOpenGL color
                     glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
                     
-#                    try:
-#                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
-#                    except:
-#                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
-
                     glNormal3fv(list(shift))
                     glVertex3fv(list(center+shift*0.2))
             glEnd()
+            glRotatef(90.0, 0.0, 1.0, 0.0)
         
 #        glMatrixMode(GL_MODELVIEW)
 #        for t in range(0, timeStepCount):
+#            print "timestep: ", t
 #            for j in range(0, quadsPerTimeStep):
+#                print "Quad: ", j
 #                glPushMatrix()
 #                for v in range(0, variablesCount):
-#                    try:#avoid division by 0
-#                        #normalizing values to 0-1 range
+#                    print "var: ", v
+#                    print "val: ", data[v][t]
+#                    try:
+#                        #avoid division by 0 and normalizing values to 0-1 range
 #                        if variableRange[v]['min'] > 0:
 #                            sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
 #                        else:
 #                            sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-#                        
+#                            
+#                        #add minSaturation
 #                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+#                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
 #                    except:
-#                        sat = 0
+#                        #color for NODATA
+#                        color = self.nodataColor 
 #                        
-#                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-#                    try:
-#                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
-#                    except:
-#                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
+#                       
+#                    #setOpenGL color
 #                    glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
 #                
 #                    glBegin(GL_QUADS)
@@ -224,6 +206,8 @@ class Viewer(QGLViewer):
 #                glPopMatrix()
 #                glRotatef(angleStepPerQuad, 0, 0, 1)
 #                glTranslatef(0, 0, heightStepPerQuad)
+
+
 
 helpstr = """<h2>Helix V i e w e r</h2>
 Use the mouse to move the camera around the helix. 

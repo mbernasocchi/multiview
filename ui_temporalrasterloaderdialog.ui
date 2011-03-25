@@ -116,7 +116,7 @@
        <item>
         <widget class="QCheckBox" name="dataVisible">
          <property name="text">
-          <string>Show all data after load</string>
+          <string>Show all data after load (slow)</string>
          </property>
         </widget>
        </item>

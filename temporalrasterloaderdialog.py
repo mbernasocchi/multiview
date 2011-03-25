@@ -66,6 +66,7 @@ class TemporalRasterLoaderDialog(QDialog):
             onlyDigits = re.compile(r'[^\d]+')
             
             layersStartDatetime = self.ui.startDatetime.dateTime()
+            addedGroups = []
             
             for filePath in self.files:
                 i += 1
@@ -102,8 +103,9 @@ class TemporalRasterLoaderDialog(QDialog):
                 #check if new group is needed
                 if groupName not in self.legend.groups():
                     g = self.legend.addGroup(groupName, False )
-                    self.legend.setGroupVisible(g, self.ui.dataVisible.isChecked())
+                    self.legend.setGroupVisible(g, False)
                     self.printToResult("New group: " + groupName)
+                    addedGroups.append(g)
                     
                 #createLayer
                 layer = QgsRasterLayer(filePath, fileBaseName)
@@ -119,7 +121,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 #add layer to project
                 if layer.isValid():
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
-                    self.legend.setLayerVisible(layer, self.ui.dataVisible.isChecked())
+                    self.legend.setLayerVisible(layer, False)
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
                     self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
                     
@@ -144,10 +146,16 @@ class TemporalRasterLoaderDialog(QDialog):
             importEndTime = QDateTime.currentDateTime()
             self.printToResult("End: " + importEndTime.toString(self.timeFormat))
             self.printToResult("Duration: " + str(importStartTime.secsTo(importEndTime)) + " sec")
+            self.main.writeStepDurations()
+            
+            #show layers if olprion was checked
+            if self.ui.dataVisible.isChecked():
+                for g in addedGroups:
+                    self.legend.setGroupVisible(g, True)
+            #update GUI
             self.main.isLoadingTemporalData = False
             self.ui.saveLogButton.setEnabled(True)
             self.ui.dataVisible.setEnabled(True)
-            self.main.writeStepDurations()
             try:
                 self.main.multiviewwidget.refreshAll()
             except:

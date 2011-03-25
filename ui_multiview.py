@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Fri Mar 25 02:19:31 2011
+# Created: Fri Mar 25 13:09:32 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -68,6 +68,9 @@ class Ui_MultiView(object):
         self.settings.addWidget(self.tracking)
         self.buttons = QtGui.QVBoxLayout()
         self.buttons.setObjectName("buttons")
+        self.manualRefreshButton = QtGui.QPushButton(MultiView)
+        self.manualRefreshButton.setObjectName("manualRefreshButton")
+        self.buttons.addWidget(self.manualRefreshButton)
         self.loadDataButton = QtGui.QPushButton(MultiView)
         self.loadDataButton.setObjectName("loadDataButton")
         self.buttons.addWidget(self.loadDataButton)
@@ -127,6 +130,7 @@ class Ui_MultiView(object):
         self.tracking.setTitle(QtGui.QApplication.translate("MultiView", "Tracking:", None, QtGui.QApplication.UnicodeUTF8))
         self.trackMouseMove.setText(QtGui.QApplication.translate("MultiView", "Mouse Move", None, QtGui.QApplication.UnicodeUTF8))
         self.trackRightClick.setText(QtGui.QApplication.translate("MultiView", "Right click", None, QtGui.QApplication.UnicodeUTF8))
+        self.manualRefreshButton.setText(QtGui.QApplication.translate("MultiView", "Refresh List", None, QtGui.QApplication.UnicodeUTF8))
         self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.helpButton.setText(QtGui.QApplication.translate("MultiView", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.aboutButton.setText(QtGui.QApplication.translate("MultiView", "About", None, QtGui.QApplication.UnicodeUTF8))
