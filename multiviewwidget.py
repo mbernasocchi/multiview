@@ -344,14 +344,19 @@ class MultiViewWidget(QDialog):
                 pass
     
     @pyqtSlot()
-    def on_availableVariablesUpdateButton_clicked(self):
-        self.updateAvailableVariables()
+    def on_aboutButton_clicked(self):
+        QMessageBox.about(self, 'MultiView - multitemporal/multivariate data viewer', "This Tool allows visualizing multitemporal-multivariate data.\
+        Further vizualisation methods can easily be added.\n\nDeveloper: Marco Bernasocchi [marco@bernawebdesign.ch]" )
     
     @pyqtSlot()
     def on_loadDataButton_clicked(self):
         self.temporalRasterLoader = TemporalRasterLoaderDialog(self.iface, self.main)
         # show the dialog
         self.temporalRasterLoader.show()
+        
+    @pyqtSlot()
+    def on_helpButton_clicked(self):
+        self.selectedVisualization.help()
                 
     @pyqtSlot()
     def on_closeButton_clicked(self):

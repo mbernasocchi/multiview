@@ -109,22 +109,16 @@
          <item>
           <layout class="QVBoxLayout" name="buttons">
            <item>
-            <widget class="QPushButton" name="availableVariablesUpdateButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
+            <widget class="QPushButton" name="loadDataButton">
              <property name="text">
-              <string>Update List</string>
+              <string>Load Data ...</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="loadDataButton">
+            <widget class="QPushButton" name="helpButton">
              <property name="text">
-              <string>Load Data ...</string>
+              <string>Help</string>
              </property>
             </widget>
            </item>
@@ -174,6 +168,19 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="aboutButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>About</string>
        </property>
       </widget>
      </item>

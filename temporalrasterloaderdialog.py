@@ -52,6 +52,7 @@ class TemporalRasterLoaderDialog(QDialog):
         if filesCount > 0:
             self.main.isLoadingTemporalData = True
             self.ui.saveLogButton.setEnabled(False)
+            self.ui.dataVisible.setEnabled(False)
             
             i = 0.0
             importStartTime = QDateTime.currentDateTime()
@@ -100,7 +101,8 @@ class TemporalRasterLoaderDialog(QDialog):
                 
                 #check if new group is needed
                 if groupName not in self.legend.groups():
-                    self.legend.addGroup(groupName, False )
+                    g = self.legend.addGroup(groupName, False )
+                    self.legend.setGroupVisible(g, self.ui.dataVisible.isChecked())
                     self.printToResult("New group: " + groupName)
                     
                 #createLayer
@@ -117,6 +119,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 #add layer to project
                 if layer.isValid():
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
+                    self.legend.setLayerVisible(layer, self.ui.dataVisible.isChecked())
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
                     self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
                     
@@ -143,6 +146,7 @@ class TemporalRasterLoaderDialog(QDialog):
             self.printToResult("Duration: " + str(importStartTime.secsTo(importEndTime)) + " sec")
             self.main.isLoadingTemporalData = False
             self.ui.saveLogButton.setEnabled(True)
+            self.ui.dataVisible.setEnabled(True)
             self.main.writeStepDurations()
             try:
                 self.main.multiviewwidget.refreshAll()

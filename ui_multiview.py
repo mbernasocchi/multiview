@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Tue Mar 22 16:58:21 2011
+# Created: Fri Mar 25 02:19:31 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -68,17 +68,12 @@ class Ui_MultiView(object):
         self.settings.addWidget(self.tracking)
         self.buttons = QtGui.QVBoxLayout()
         self.buttons.setObjectName("buttons")
-        self.availableVariablesUpdateButton = QtGui.QPushButton(MultiView)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.availableVariablesUpdateButton.sizePolicy().hasHeightForWidth())
-        self.availableVariablesUpdateButton.setSizePolicy(sizePolicy)
-        self.availableVariablesUpdateButton.setObjectName("availableVariablesUpdateButton")
-        self.buttons.addWidget(self.availableVariablesUpdateButton)
         self.loadDataButton = QtGui.QPushButton(MultiView)
         self.loadDataButton.setObjectName("loadDataButton")
         self.buttons.addWidget(self.loadDataButton)
+        self.helpButton = QtGui.QPushButton(MultiView)
+        self.helpButton.setObjectName("helpButton")
+        self.buttons.addWidget(self.helpButton)
         spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.buttons.addItem(spacerItem1)
         self.settings.addLayout(self.buttons)
@@ -104,6 +99,14 @@ class Ui_MultiView(object):
         self.warningDisplay.setText("")
         self.warningDisplay.setObjectName("warningDisplay")
         self.bottom.addWidget(self.warningDisplay)
+        self.aboutButton = QtGui.QPushButton(MultiView)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.aboutButton.sizePolicy().hasHeightForWidth())
+        self.aboutButton.setSizePolicy(sizePolicy)
+        self.aboutButton.setObjectName("aboutButton")
+        self.bottom.addWidget(self.aboutButton)
         self.closeButton = QtGui.QPushButton(MultiView)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -124,7 +127,8 @@ class Ui_MultiView(object):
         self.tracking.setTitle(QtGui.QApplication.translate("MultiView", "Tracking:", None, QtGui.QApplication.UnicodeUTF8))
         self.trackMouseMove.setText(QtGui.QApplication.translate("MultiView", "Mouse Move", None, QtGui.QApplication.UnicodeUTF8))
         self.trackRightClick.setText(QtGui.QApplication.translate("MultiView", "Right click", None, QtGui.QApplication.UnicodeUTF8))
-        self.availableVariablesUpdateButton.setText(QtGui.QApplication.translate("MultiView", "Update List", None, QtGui.QApplication.UnicodeUTF8))
         self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
+        self.helpButton.setText(QtGui.QApplication.translate("MultiView", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.aboutButton.setText(QtGui.QApplication.translate("MultiView", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("MultiView", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

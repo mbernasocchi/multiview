@@ -70,6 +70,9 @@ class HelixWidget(QWidget):
     def reset(self):
         pass
     
+    def help(self):
+        self.viewer.help()
+    
     
 class Viewer(QGLViewer):
     def __init__(self, parent):
@@ -79,10 +82,11 @@ class Viewer(QGLViewer):
         self.mainWidget = parent.mainWidget
         self.data = None
         self.PRECISION = 30
-        self.timeStepsPerCycle = 1
+        self.timeStepsPerCycle = 7
         self.height = 400
         self.ribbonScale = 0.8
         self.subRibbonScale = 30
+        self.minSaturation = 0.25
     
     
     def init(self):
@@ -126,13 +130,15 @@ class Viewer(QGLViewer):
             return
         
         data = []
-        maxPerVariable = []
+        variableRange = []
         timeCounts  = []
         colors = []
         for (layerGroupName, values) in self.data.iteritems():
             timeCounts.append(len(values))
             x, y = zip(*values)
-            maxPerVariable.append(max(y))
+            minVal = min(y)
+            maxVal = max(y)
+            variableRange.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal})
             data.append(y)
             color = self.mainWidget.colors[QString(layerGroupName)]
             color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
@@ -164,12 +170,21 @@ class Viewer(QGLViewer):
                 glPushMatrix()
                 for v in range(0, variablesCount):
                     try:#avoid division by 0
-                        sat = data[v][t] / maxPerVariable[v]
+                        #normalizing values to 0-1 range
+                        if variableRange[v]['min'] > 0:
+                            sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
+                        else:
+                            sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
+                        
+                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
                     except:
                         sat = 0
+                        
                     color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-                    print v, t, data[v][t], sat, color.saturation()
-                    #rc.c[3] = transparency
+                    try:
+                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
+                    except:
+                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
                     glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
                 
                     glBegin(GL_QUADS)

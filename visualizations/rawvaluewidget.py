@@ -41,3 +41,7 @@ class RawValueWidget(QWidget):
         
     def reset(self):
         self.ui.display.setText("")
+    
+    def help(self):
+        self.ui.display.setText("This widget shows the raw values coming from the data in the form:\
+        \n{'variableID': [(timeInSec, value), (timeInSec, value), ...], ...}")
