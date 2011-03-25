@@ -407,3 +407,64 @@ public class Helix extends Icon3D {
 	}
 
 }
+//rc = getRenderingContext()
+//# Draw Helix
+//rc.gl.glEnable(GL.GL_BLEND)
+//rc.gl.glEnable(GL.GL_DEPTH_TEST)
+//rc.gl.glTranslated(a.getBounds().getCenterX(), a.getBounds().getCenterY(), 0)
+//
+//rc.gl.glScalef(perimeter, perimeter, 1)
+//rc.gl.glRotatef(rotationAngle, 0, 0, 1)
+//
+//#TODO data[][] = a.getData(this)
+//if (data == null):
+//     return
+//timeStepCount = len(data)
+//diagnosesCount = len(data[0])
+//#TODO
+//#float[] maxPerDiagnosis = new float[diagnosesCount]
+//for d in range(0, diagnosesCount):
+//    for i in range(0, timeStepCount):
+//        if (data[i][d] > maxPerDiagnosis[d]):
+//            maxPerDiagnosis[d] = data[i][d]
+//
+//quadsPerTimeStep = 1 + self.PRECISION / timeStepsPerCycle # At least one quad per time step
+//quadsPerCycle = quadsPerTimeStep * timeStepsPerCycle
+//
+//cycleCount = float( timeStepCount / timeStepsPerCycle )
+//transparency = getMapView().getFadingManager().getTransparency(a)
+//ribbonHeight = height / (1 + cycleCount)
+//subRibbonHeight = ribbonHeight * ribbonScale / diagnosesCount
+//
+//# h = hs * ts * qt + rh
+//# h - rh = hs * ts * qt
+//# (h - rh)
+//# ------ = hs
+//# (ts * qt)
+//heightStepPerQuad = (height - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
+//angleStepPerQuad = 360.0 / quadsPerCycle
+//sin = float( Math.sin(angleStepPerQuad * Math.PI / 180) )
+//cos = float( (-1 * Math.cos(angleStepPerQuad * Math.PI / 180)) )
+//
+//rc.gl.glMatrixMode(GL.GL_MODELVIEW)
+//for i in range(0, timeStepCount):
+//    for j in range(0, quadsPerTimeStep):
+//        rc.gl.glPushMatrix()
+//        for d in range(0, diagnosesCount):
+//            t = data[i][d] / maxPerDiagnosis[d]
+//            #TODO
+//            colorScales[d % colorScales.length].getColor(t).getColorComponents(rc.c)
+//            rc.c[3] = transparency
+//            rc.gl.glColor4fv(rc.c, 0)
+//
+//            rc.gl.glBegin(GL.GL_QUADS)
+//            rc.gl.glVertex3f(0, -1, 0)
+//            rc.gl.glVertex3f(0, -1, subRibbonHeight * subRibbonScale)
+//            rc.gl.glVertex3f(sin, cos, subRibbonHeight * subRibbonScale + heightStepPerQuad)
+//            rc.gl.glVertex3f(sin, cos, heightStepPerQuad)
+//            rc.gl.glEnd()
+//
+//            rc.gl.glTranslatef(0, 0, subRibbonHeight)
+//        rc.gl.glPopMatrix()
+//        rc.gl.glRotatef(angleStepPerQuad, 0, 0, 1)
+//        rc.gl.glTranslatef(0, 0, heightStepPerQuad)

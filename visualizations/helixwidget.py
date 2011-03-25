@@ -28,23 +28,6 @@ try:
 except:
     raise ImportError("PyQGLViewer needed for this visualization \nplease get it at http://pyqglviewer.gforge.inria.fr")
 
-helpstr = """<h2>Helix V i e w e r</h2>
-Use the mouse to move the camera around the helix. 
-You can respectively revolve around, zoom and translate with the three mouse buttons. 
-Left and middle buttons pressed together rotate around the camera view direction axis<br><br>
-Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, 
-<b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. 
-See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>
-Double clicks automates single click actions: A left button double click aligns 
-the closer axis with the camera (if close enough). A middle button double click 
-fits the zoom of the camera and the right button re-centers the scene.<br><br>
-A left button double click while holding right button pressed defines the camera 
-<i>Revolve Around Point</i>.
-See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>
-Press <b>Escape</b> to exit the viewer."""
-
-
-    
 from ui_helixwidget import Ui_HelixWidget
 
 # create the dialog for zoom to point
@@ -164,11 +147,26 @@ class Viewer(QGLViewer):
         sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
         cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
         
-        glMatrixMode(GL_MODELVIEW)
-        for t in range(0, timeStepCount):
-            for j in range(0, quadsPerTimeStep):
-                glPushMatrix()
-                for v in range(0, variablesCount):
+        
+        nbSteps = timeStepCount
+        nbSub = variablesCount
+        for v in range(0, nbSub):
+            glBegin(GL_QUAD_STRIP)
+            for t in range(0,int(nbSteps)):
+                ratio = t/float(nbSteps)
+                angle = angleStepPerQuad*ratio
+                c = math.cos(angle)
+                s = math.sin(angle)
+                radius = 1.0            
+                center = Vec(radius*c, ratio-0.5, radius*s)
+    
+                for j in range(0,2):
+                    nj = float(v+j)
+                    delta = 3*nj/nbSub
+                    cdelta = math.cos(delta)
+                    shift = Vec(c*cdelta, math.sin(delta), s*cdelta)
+                    
+                    
                     try:#avoid division by 0
                         #normalizing values to 0-1 range
                         if variableRange[v]['min'] > 0:
@@ -177,26 +175,68 @@ class Viewer(QGLViewer):
                             sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
                         
                         sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
                     except:
-                        sat = 0
+                       color = QColor.fromHsvF(colors[v].hueF(), 0.0, 0.75, 0.0)
                         
-                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-                    try:
-                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
-                    except:
-                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
                     glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                
-                    glBegin(GL_QUADS)
-                    glVertex3f(0, -1, 0)
-                    glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
-                    glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
-                    glVertex3f(sin, cos, heightStepPerQuad)
-                    glEnd()
-                
-                    glTranslatef(0, 0, subRibbonHeight)
-                glPopMatrix()
-                glRotatef(angleStepPerQuad, 0, 0, 1)
-                glTranslatef(0, 0, heightStepPerQuad)
+                    
+#                    try:
+#                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
+#                    except:
+#                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
 
-    
+                    glNormal3fv(list(shift))
+                    glVertex3fv(list(center+shift*0.2))
+            glEnd()
+        
+#        glMatrixMode(GL_MODELVIEW)
+#        for t in range(0, timeStepCount):
+#            for j in range(0, quadsPerTimeStep):
+#                glPushMatrix()
+#                for v in range(0, variablesCount):
+#                    try:#avoid division by 0
+#                        #normalizing values to 0-1 range
+#                        if variableRange[v]['min'] > 0:
+#                            sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
+#                        else:
+#                            sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
+#                        
+#                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+#                    except:
+#                        sat = 0
+#                        
+#                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+#                    try:
+#                        print data[v][t], variableRange[v]['min'], variableRange[v]['max'], sat
+#                    except:
+#                        print 'NODATA', variableRange[v]['min'], variableRange[v]['max'], sat
+#                    glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+#                
+#                    glBegin(GL_QUADS)
+#                    glVertex3f(0, -1, 0)
+#                    glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
+#                    glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
+#                    glVertex3f(sin, cos, heightStepPerQuad)
+#                    glEnd()
+#                
+#                    glTranslatef(0, 0, subRibbonHeight)
+#                glPopMatrix()
+#                glRotatef(angleStepPerQuad, 0, 0, 1)
+#                glTranslatef(0, 0, heightStepPerQuad)
+
+helpstr = """<h2>Helix V i e w e r</h2>
+Use the mouse to move the camera around the helix. 
+You can respectively revolve around, zoom and translate with the three mouse buttons. 
+Left and middle buttons pressed together rotate around the camera view direction axis<br><br>
+Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, 
+<b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. 
+See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>
+Double clicks automates single click actions: A left button double click aligns 
+the closer axis with the camera (if close enough). A middle button double click 
+fits the zoom of the camera and the right button re-centers the scene.<br><br>
+A left button double click while holding right button pressed defines the camera 
+<i>Revolve Around Point</i>.
+See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>
+Press <b>Escape</b> to exit the viewer."""
+   
