@@ -64,20 +64,21 @@ class Viewer(QGLViewer):
         #config
         self.mainWidget = parent.mainWidget
         self.data = None
-        self.PRECISION = 40
-        self.timeStepsPerCycle = 4
-        self.height = 400
-        self.ribbonScale = 0.8
-        self.subRibbonScale = 30
+        self.PRECISION = 0
+        self.timeStepsPerCycle = 10
+        self.height = 10
+        self.ribbonScale = 1
+        #self.subRibbonScale = 30
         self.minSaturation = 0.25
-        self.nodataColor = QColor.fromHsvF(0.0, 0.0, 0.75, 0.0)
     
     
     def init(self):
         """OpenGL init, happens only once"""
+        bgcolor = glGetFloatv(GL_COLOR_CLEAR_VALUE)
+        self.nodataColor = QColor.fromRgbF(bgcolor[0],bgcolor[1],bgcolor[2],bgcolor[3])
 #        self.setSceneRadius(100.0)          # scene has a 100 OpenGL units radius 
 #        self.setSceneCenter( Vec(400,0,0) ) # with a center shifted by 400 units along X direction
-#        self.camera().showEntireScene()
+        #self.camera().showEntireScene()
 
     def helpString(self):
         return helpstr
@@ -118,11 +119,6 @@ class Viewer(QGLViewer):
         #transparency = getMapView().getFadingManager().getTransparency(a)
         ribbonHeight = self.height / (1 + cycleCount)
         subRibbonHeight = ribbonHeight * self.ribbonScale / variablesCount
-        # h = hs * ts * qt + rh
-        # h - rh = hs * ts * qt
-        # (h - rh)
-        # ------ = hs
-        # (ts * qt)
         heightStepPerQuad = (self.height - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
         angleStepPerQuad = 360.0 / quadsPerCycle
         sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
@@ -131,81 +127,108 @@ class Viewer(QGLViewer):
         
         for v in range(0, variablesCount):
             glBegin(GL_QUAD_STRIP)
-            for t in range(0,int(timeStepCount)):
-                ratio = t/float(timeStepCount)
-                angle = angleStepPerQuad*ratio
-                c = math.cos(angle)
-                s = math.sin(angle)
-                radius = 1.0            
-                center = Vec(radius*c, ratio-0.5, radius*s)
-    
-                for j in range(0,2):
-                    nj = float(v+j)
-                    delta = 3*nj/variablesCount
-                    cdelta = math.cos(delta)
-                    shift = Vec(c*cdelta, math.sin(delta), s*cdelta)
-                    
-                    try:
-                        #avoid division by 0 and normalizing values to 0-1 range
-                        if variableRange[v]['min'] > 0:
-                            sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
-                        else:
-                            sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-                            
-                        #add minSaturation
-                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
-                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-                    except:
-                        #color for NODATA
-                        color = self.nodataColor 
+            z=0
+            x=0
+            for t in range(0, timeStepCount):
+                angle = angleStepPerQuad * (t/float(timeStepCount))
+                try:
+                    #avoid division by 0 and normalizing values to 0-1 range
+                    if variableRange[v]['min'] > 0:
+                        sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
+                    else:
+                        sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
                         
-                       
-                    #setOpenGL color
-                    glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                    
-                    glNormal3fv(list(shift))
-                    glVertex3fv(list(center+shift*0.2))
+                    #add minSaturation
+                    sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+                except:
+                    #color for NODATA
+                    color = self.nodataColor 
+               
+                #setOpenGL color
+                glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+                
+                z += 0.1
+                y = math.cos(angle)
+                x = math.sin(angle)
+                
+                size = 0.05
+                glVertex3f(x,y,z)
+                glVertex3f(x-size,y+size,z)
+                glVertex3f(x-size,y+size,z-size)
+                glVertex3f(x,y,z-size)
+                
             glEnd()
-            glRotatef(90.0, 0.0, 1.0, 0.0)
+            glTranslatef(0.0, 0.0, 0.1)
+
+               
+               
+               
+               
+                    
+                   
+                
+                ##glNormal3fv(list(shift))
+                ##glVertex3fv(list(center+shift*0.2))
+                #glBegin(GL_QUADS)
+                #glVertex3f(0.0, subRibbonHeight, 0.0)
+                #glVertex3f(0.1, subRibbonHeight, 0.0)
+                #glVertex3f(0.1, 0.0, 0.0)
+                #glVertex3f(0.0, 0.0, 0.0)
+                #glEnd()
+                #glTranslatef(0.1, 0.0, 0.0)
+            ##move to start drawing the next ribbon
+            #glPopMatrix()
+            #glTranslatef(0.0, subRibbonHeight, 0.0)
+            
         
-#        glMatrixMode(GL_MODELVIEW)
-#        for t in range(0, timeStepCount):
-#            print "timestep: ", t
-#            for j in range(0, quadsPerTimeStep):
-#                print "Quad: ", j
-#                glPushMatrix()
-#                for v in range(0, variablesCount):
-#                    print "var: ", v
-#                    print "val: ", data[v][t]
-#                    try:
-#                        #avoid division by 0 and normalizing values to 0-1 range
-#                        if variableRange[v]['min'] > 0:
-#                            sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
-#                        else:
-#                            sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-#                            
-#                        #add minSaturation
-#                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
-#                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-#                    except:
-#                        #color for NODATA
-#                        color = self.nodataColor 
-#                        
-#                       
-#                    #setOpenGL color
-#                    glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-#                
-#                    glBegin(GL_QUADS)
-#                    glVertex3f(0, -1, 0)
-#                    glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
-#                    glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
-#                    glVertex3f(sin, cos, heightStepPerQuad)
-#                    glEnd()
-#                
-#                    glTranslatef(0, 0, subRibbonHeight)
-#                glPopMatrix()
-#                glRotatef(angleStepPerQuad, 0, 0, 1)
-#                glTranslatef(0, 0, heightStepPerQuad)
+        #glEnable(GL_BLEND);
+        #glEnable(GL_DEPTH_TEST);
+        ##glTranslated(a.getBounds().getCenterX(), a.getBounds().getCenterY(), 0);
+
+        #glScalef(1, 1, 1);
+        #glRotatef(90, 0, 0, 1);
+        
+        
+        #glMatrixMode(GL_MODELVIEW)
+        #for t in range(0, timeStepCount):
+            #print "timestep: ", t
+            #for j in range(0, quadsPerTimeStep):
+                #print "Quad: ", j
+                #glPushMatrix()
+                #for v in range(0, variablesCount):
+                    #try:
+                        ##avoid division by 0 and normalizing values to 0-1 range
+                        #value = data[v][t]
+                        #if variableRange[v]['min'] > 0:
+                            #sat = ( value - variableRange[v]['min'] ) / variableRange[v]['range']
+                        #else:
+                            #sat = ( value + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
+                            
+                        ##add minSaturation
+                        #sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+                        #color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+                    #except:
+                        ##color for NODATA
+                        #color = self.nodataColor 
+                        #value = None
+                        
+                    ##setOpenGL color
+                    #glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+                
+                    #glBegin(GL_QUADS)
+                    #glVertex3f(0, -1, 0)
+                    #glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
+                    #glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
+                    #glVertex3f(sin, cos, heightStepPerQuad)
+                    #glEnd()
+                
+                    #glTranslatef(0, 0, subRibbonHeight)
+                    
+                #glPopMatrix()
+                #glRotatef(angleStepPerQuad, 0, 0, 1)
+                #glTranslatef(0, 0, heightStepPerQuad)
+                
 
 
 
