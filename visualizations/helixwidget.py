@@ -42,20 +42,28 @@ class HelixWidget(QWidget):
         
         self.viewer = Viewer(self)
         self.viewer.setObjectName("viewer")
-        self.ui.verticalLayout.addWidget(self.viewer)
+        self.ui.verticalLayout.insertWidget(0, self.viewer)
         
     def name(self):
         return "Helix"
     
     def redraw(self, valuesArray, recalculateBonds=True):
         self.viewer.setData(valuesArray)
+        print "eee3"
         
     def reset(self):
         self.viewer.setData(None)
     
     def help(self):
         self.viewer.help()
+        
+    @pyqtSlot(int)
+    def on_sizePerCycle_valueChanged(self, value):
+        self.mainWidget.redraw(False)
     
+    @pyqtSlot(int)
+    def on_unitPerCycle_currentIndexChanged(self, value):
+        self.mainWidget.redraw(False)
     
 class Viewer(QGLViewer):
     def __init__(self, parent):
