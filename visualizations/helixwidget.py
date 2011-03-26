@@ -75,7 +75,7 @@ class Viewer(QGLViewer):
     def init(self):
         """OpenGL init, happens only once"""
         bgcolor = glGetFloatv(GL_COLOR_CLEAR_VALUE)
-        self.nodataColor = QColor.fromRgbF(bgcolor[0],bgcolor[1],bgcolor[2],bgcolor[3])
+        self.nodataColor = self.backgroundColor()
 #        self.setSceneRadius(100.0)          # scene has a 100 OpenGL units radius 
 #        self.setSceneCenter( Vec(400,0,0) ) # with a center shifted by 400 units along X direction
         #self.camera().showEntireScene()
@@ -93,7 +93,8 @@ class Viewer(QGLViewer):
         if (self.data == None):
             print "no data yet"
             return
-        
+            
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0,0,0,1])
         data = []
         variableRange = []
         timeCounts  = []
@@ -128,9 +129,9 @@ class Viewer(QGLViewer):
         for v in range(0, variablesCount):
             glBegin(GL_QUAD_STRIP)
             z=0
-            x=0
             for t in range(0, timeStepCount):
                 angle = angleStepPerQuad * (t/float(timeStepCount))
+                #angle = math.radians(angle)
                 try:
                     #avoid division by 0 and normalizing values to 0-1 range
                     if variableRange[v]['min'] > 0:
@@ -148,18 +149,18 @@ class Viewer(QGLViewer):
                 #setOpenGL color
                 glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
                 
-                z += 0.1
+                size = 0.1
+                
+                z += size
                 y = math.cos(angle)
                 x = math.sin(angle)
                 
-                size = 0.05
+                #tl
                 glVertex3f(x,y,z)
-                glVertex3f(x-size,y+size,z)
-                glVertex3f(x-size,y+size,z-size)
+                #bl
                 glVertex3f(x,y,z-size)
-                
             glEnd()
-            glTranslatef(0.0, 0.0, 0.1)
+            glTranslatef(0.0, 0.0, size)
 
                
                
