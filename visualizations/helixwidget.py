@@ -64,20 +64,30 @@ class HelixWidget(QWidget):
     @pyqtSlot(int)
     def on_unitPerCycle_currentIndexChanged(self, value):
         self.mainWidget.redraw(False)
+        
+    @pyqtSlot(float)
+    def on_minSaturation_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+    
+    @pyqtSlot(float)
+    def on_precision_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+    
+    @pyqtSlot(float)
+    def on_ribbonWidth_valueChanged(self, value):
+        self.mainWidget.redraw(False)
     
 class Viewer(QGLViewer):
     def __init__(self, parent):
         QGLViewer.__init__(self)
         
-        #config
+        #INIT
         self.mainWidget = parent.mainWidget
+        self.ui = parent.ui
         self.data = None
-        self.PRECISION = 30
+        self.HEIGHT = 10
         self.timeStepsPerCycle = 5
-        self.height = 10
-        self.ribbonScale = 0.8
-        self.subRibbonScale = 1
-        self.minSaturation = 0.25
+        self.quadIdInfo = []
     
     
     def init(self):
@@ -94,9 +104,13 @@ class Viewer(QGLViewer):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         
-#        self.setSceneRadius(100.0)          # scene has a 100 OpenGL units radius 
-#        self.setSceneCenter( Vec(400,0,0) ) # with a center shifted by 400 units along X direction
-        #self.camera().showEntireScene()
+        self.setSceneRadius(self.HEIGHT/2)
+        self.showEntireScene()
+        self.setAxisIsDrawn()
+        
+        self.dir= Vec()
+        self.selectedPoint = Vec()
+        
 
     def helpString(self):
         return helpstr
@@ -106,10 +120,20 @@ class Viewer(QGLViewer):
         self.updateGL()
         
     def draw(self):
+        self.drawWithNames()
+        
+    def drawWithNames(self):
         '''Drawing routine'''
         # Draw Helix
         if (self.data == None):
             return
+        
+        
+        #settings fro GUI:
+        self.PRECISION = self.ui.precision.value()*100
+        self.MINSATURATION = self.ui.minSaturation.value()
+        self.RIBBONSCALE = self.ui.ribbonWidth.value()
+        
         
         data = []
         variableRange = []
@@ -134,16 +158,17 @@ class Viewer(QGLViewer):
         quadsPerCycle = quadsPerTimeStep * self.timeStepsPerCycle
         cycleCount = float( timeStepCount / self.timeStepsPerCycle )
         #transparency = getMapView().getFadingManager().getTransparency(a)
-        ribbonHeight = self.height / (1 + cycleCount)
-        subRibbonHeight = ribbonHeight * self.ribbonScale / variablesCount
-        heightStepPerQuad = (self.height - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
+        ribbonHeight = self.HEIGHT / (1 + cycleCount)
+        subRibbonHeight = ribbonHeight * self.RIBBONSCALE / variablesCount
+        heightStepPerQuad = (self.HEIGHT - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
         angleStepPerQuad = 360.0 / quadsPerCycle
         sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
         cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
         
         #set the helix horizontal
-        glRotatef(90, 0, 1, 0);
+        glRotatef(90, 0, 1, 0)
         
+        quadID = 0
         glMatrixMode(GL_MODELVIEW)
         for t in range(0, timeStepCount):
             for j in range(0, quadsPerTimeStep):
@@ -157,7 +182,7 @@ class Viewer(QGLViewer):
                         else:
                             sat = ( value + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
                         #add minSaturation
-                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+                        sat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
                         color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
                     except:
                         value = None
@@ -166,14 +191,18 @@ class Viewer(QGLViewer):
                     if value is not None:
                       #setOpenGL color
                       glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                      actualSubRibbonHeight  = subRibbonHeight * self.subRibbonScale
+                      actualSubRibbonHeight  = subRibbonHeight
+                      self.quadIdInfo.append({'Var':v, 'Time':t, 'Quad': j, 'Value': value} )
                       #start drawing QUADS
+                      glPushName(quadID)
                       glBegin(GL_QUADS)
                       glVertex3f(0, -1, 0)
                       glVertex3f(0, -1, actualSubRibbonHeight)
                       glVertex3f(sin, cos, actualSubRibbonHeight + heightStepPerQuad)
                       glVertex3f(sin, cos, heightStepPerQuad)
                       glEnd()
+                      glPopName()
+                      quadID += 1
                 
                     glTranslatef(0, 0, subRibbonHeight)
                     
@@ -182,6 +211,30 @@ class Viewer(QGLViewer):
                 glTranslatef(0, 0, heightStepPerQuad)
                 
                 
+                
+        
+
+        # Draw (approximated) intersection point on selected object
+        if self.selectedName() >= 0:
+            glColor3f(0.9, 0.2, 0.1)
+            glBegin(GL_POINTS)
+            glVertex3fv(list(self.selectedPoint))
+            glEnd()
+    
+    def postSelection(self,point):
+        # Find the selectedPoint coordinates, using camera()->pointUnderPixel().
+        self.selectedPoint, found = self.camera().pointUnderPixel(point)
+        self.selectedPoint -= 0.03*self.dir # Small offset to make point clearly visible.
+        # Note that "found" is different from (selectedObjectId()>=0) because of the size of the select region.
+
+        if self.selectedName() == -1:
+            QMessageBox.information(self, "No selection",
+                 "No object selected under pixel " + str(point.x()) + "," + str(point.y()))
+        else:
+            QMessageBox.information(self, "Selection",
+                 #"Spiral number " + str(self.selectedName()) + " selected under pixel " + str(point.x()) + "," + str(point.y())
+                 str(self.quadIdInfo[self.selectedName()])
+                 )
                 
 ###OTHER VARIANT                
 #        for v in range(0, variablesCount):
@@ -198,7 +251,7 @@ class Viewer(QGLViewer):
 #                        sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
 #                        
 #                    #add minSaturation
-#                    sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+#                    sat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
 #                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
 #                except:
 #                    #color for NODATA
