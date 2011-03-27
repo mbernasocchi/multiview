@@ -42,6 +42,7 @@ class HelixWidget(QWidget):
         
         self.viewer = Viewer(self)
         self.viewer.setObjectName("viewer")
+        self.viewer.setSizePolicy( QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         self.ui.verticalLayout.insertWidget(0, self.viewer)
         
     def name(self):
@@ -49,7 +50,6 @@ class HelixWidget(QWidget):
     
     def redraw(self, valuesArray, recalculateBonds=True):
         self.viewer.setData(valuesArray)
-        print "eee3"
         
     def reset(self):
         self.viewer.setData(None)
@@ -72,18 +72,28 @@ class Viewer(QGLViewer):
         #config
         self.mainWidget = parent.mainWidget
         self.data = None
-        self.PRECISION = 0
-        self.timeStepsPerCycle = 10
+        self.PRECISION = 30
+        self.timeStepsPerCycle = 5
         self.height = 10
-        self.ribbonScale = 1
-        #self.subRibbonScale = 30
+        self.ribbonScale = 0.8
+        self.subRibbonScale = 1
         self.minSaturation = 0.25
     
     
     def init(self):
         """OpenGL init, happens only once"""
-        bgcolor = glGetFloatv(GL_COLOR_CLEAR_VALUE)
-        self.nodataColor = self.backgroundColor()
+        
+        light_position = [ 1.0, 1.0, 1.0, 0.0 ]
+        glShadeModel (GL_SMOOTH)
+        
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0,0,0,1])
+        
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_BLEND)
+        
 #        self.setSceneRadius(100.0)          # scene has a 100 OpenGL units radius 
 #        self.setSceneCenter( Vec(400,0,0) ) # with a center shifted by 400 units along X direction
         #self.camera().showEntireScene()
@@ -99,10 +109,8 @@ class Viewer(QGLViewer):
         '''Drawing routine'''
         # Draw Helix
         if (self.data == None):
-            print "no data yet"
             return
-            
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0,0,0,1])
+        
         data = []
         variableRange = []
         timeCounts  = []
@@ -133,111 +141,84 @@ class Viewer(QGLViewer):
         sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
         cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
         
+        #set the helix horizontal
+        glRotatef(90, 0, 1, 0);
         
-        for v in range(0, variablesCount):
-            glBegin(GL_QUAD_STRIP)
-            z=0
-            for t in range(0, timeStepCount):
-                angle = angleStepPerQuad * (t/float(timeStepCount))
-                #angle = math.radians(angle)
-                try:
-                    #avoid division by 0 and normalizing values to 0-1 range
-                    if variableRange[v]['min'] > 0:
-                        sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
-                    else:
-                        sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-                        
-                    #add minSaturation
-                    sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
-                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-                except:
-                    #color for NODATA
-                    color = self.nodataColor 
-               
-                #setOpenGL color
-                glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                
-                size = 0.1
-                
-                z += size
-                y = math.cos(angle)
-                x = math.sin(angle)
-                
-                #tl
-                glVertex3f(x,y,z)
-                #bl
-                glVertex3f(x,y,z-size)
-            glEnd()
-            glTranslatef(0.0, 0.0, size)
-
-               
-               
-               
-               
+        glMatrixMode(GL_MODELVIEW)
+        for t in range(0, timeStepCount):
+            for j in range(0, quadsPerTimeStep):
+                glPushMatrix()
+                for v in range(0, variablesCount):
+                    try:
+                        #avoid division by 0 and normalizing values to 0-1 range
+                        value = data[v][t]
+                        if variableRange[v]['min'] > 0:
+                            sat = ( value - variableRange[v]['min'] ) / variableRange[v]['range']
+                        else:
+                            sat = ( value + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
+                        #add minSaturation
+                        sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+                    except:
+                        value = None
+                    #print "Var: ", v, "Time: ", t, " Quad: ", j, '--> ', value    
                     
-                   
+                    if value is not None:
+                      #setOpenGL color
+                      glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+                      actualSubRibbonHeight  = subRibbonHeight * self.subRibbonScale
+                      #start drawing QUADS
+                      glBegin(GL_QUADS)
+                      glVertex3f(0, -1, 0)
+                      glVertex3f(0, -1, actualSubRibbonHeight)
+                      glVertex3f(sin, cos, actualSubRibbonHeight + heightStepPerQuad)
+                      glVertex3f(sin, cos, heightStepPerQuad)
+                      glEnd()
                 
-                ##glNormal3fv(list(shift))
-                ##glVertex3fv(list(center+shift*0.2))
-                #glBegin(GL_QUADS)
-                #glVertex3f(0.0, subRibbonHeight, 0.0)
-                #glVertex3f(0.1, subRibbonHeight, 0.0)
-                #glVertex3f(0.1, 0.0, 0.0)
-                #glVertex3f(0.0, 0.0, 0.0)
-                #glEnd()
-                #glTranslatef(0.1, 0.0, 0.0)
-            ##move to start drawing the next ribbon
-            #glPopMatrix()
-            #glTranslatef(0.0, subRibbonHeight, 0.0)
-            
-        
-        #glEnable(GL_BLEND);
-        #glEnable(GL_DEPTH_TEST);
-        ##glTranslated(a.getBounds().getCenterX(), a.getBounds().getCenterY(), 0);
-
-        #glScalef(1, 1, 1);
-        #glRotatef(90, 0, 0, 1);
-        
-        
-        #glMatrixMode(GL_MODELVIEW)
-        #for t in range(0, timeStepCount):
-            #print "timestep: ", t
-            #for j in range(0, quadsPerTimeStep):
-                #print "Quad: ", j
-                #glPushMatrix()
-                #for v in range(0, variablesCount):
-                    #try:
-                        ##avoid division by 0 and normalizing values to 0-1 range
-                        #value = data[v][t]
-                        #if variableRange[v]['min'] > 0:
-                            #sat = ( value - variableRange[v]['min'] ) / variableRange[v]['range']
-                        #else:
-                            #sat = ( value + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-                            
-                        ##add minSaturation
-                        #sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
-                        #color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-                    #except:
-                        ##color for NODATA
-                        #color = self.nodataColor 
-                        #value = None
-                        
-                    ##setOpenGL color
-                    #glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                
-                    #glBegin(GL_QUADS)
-                    #glVertex3f(0, -1, 0)
-                    #glVertex3f(0, -1, subRibbonHeight * self.subRibbonScale)
-                    #glVertex3f(sin, cos, subRibbonHeight * self.subRibbonScale + heightStepPerQuad)
-                    #glVertex3f(sin, cos, heightStepPerQuad)
-                    #glEnd()
-                
-                    #glTranslatef(0, 0, subRibbonHeight)
+                    glTranslatef(0, 0, subRibbonHeight)
                     
-                #glPopMatrix()
-                #glRotatef(angleStepPerQuad, 0, 0, 1)
-                #glTranslatef(0, 0, heightStepPerQuad)
+                glPopMatrix()
+                glRotatef(angleStepPerQuad, 0, 0, 1)
+                glTranslatef(0, 0, heightStepPerQuad)
                 
+                
+                
+###OTHER VARIANT                
+#        for v in range(0, variablesCount):
+#            glBegin(GL_QUAD_STRIP)
+#            z=0
+#            for t in range(0, timeStepCount):
+#                angle = angleStepPerQuad * (t/float(timeStepCount))
+#                #angle = math.radians(angle)
+#                try:
+#                    #avoid division by 0 and normalizing values to 0-1 range
+#                    if variableRange[v]['min'] > 0:
+#                        sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
+#                    else:
+#                        sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
+#                        
+#                    #add minSaturation
+#                    sat =  ( sat + self.minSaturation ) / ( 1 + self.minSaturation )
+#                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+#                except:
+#                    #color for NODATA
+#                    color = self.nodataColor 
+#               
+#                #setOpenGL color
+#                glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
+#                
+#                size = 0.1
+#                
+#                z += size
+#                y = math.cos(angle)
+#                x = math.sin(angle)
+#                
+#                #tl
+#                glVertex3f(x,y,z)
+#                #bl
+#                glVertex3f(x,y,z-size)
+#            glEnd()
+#            glTranslatef(0.0, 0.0, size)
 
 
 
