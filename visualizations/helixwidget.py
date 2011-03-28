@@ -69,7 +69,7 @@ class HelixWidget(QWidget):
     def on_minSaturation_valueChanged(self, value):
         self.mainWidget.redraw(False)
     
-    @pyqtSlot(float)
+    @pyqtSlot(int)
     def on_precision_valueChanged(self, value):
         self.mainWidget.redraw(False)
     
@@ -85,31 +85,23 @@ class Viewer(QGLViewer):
         self.mainWidget = parent.mainWidget
         self.ui = parent.ui
         self.data = None
-        self.HEIGHT = 10
-        self.timeStepsPerCycle = 5
-        self.quadIdInfo = []
     
     
     def init(self):
         """OpenGL init, happens only once"""
         
-        light_position = [ 1.0, 1.0, 1.0, 0.0 ]
-        glShadeModel (GL_SMOOTH)
+        self.timeStepsPerCycle = 5
+        self.HEIGHT = self.timeStepsPerCycle*2
         
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0,0,0,1])
         
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_BLEND)
+        #prevent saving the state on exit
+        self.setStateFileName(QString())
+        #lighting
+        glDisable(GL_LIGHTING)
         
-        self.setSceneRadius(self.HEIGHT/2)
+        self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
+        self.setSceneRadius(self.HEIGHT/2.5)
         self.showEntireScene()
-        self.setAxisIsDrawn()
-        
-        self.dir= Vec()
-        self.selectedPoint = Vec()
         
 
     def helpString(self):
@@ -128,15 +120,13 @@ class Viewer(QGLViewer):
         if (self.data == None):
             return
         
-        
-        #settings fro GUI:
-        self.PRECISION = self.ui.precision.value()*100
+        #SETTINGS from GUI:
+        self.PRECISION = self.ui.precision.value()
         self.MINSATURATION = self.ui.minSaturation.value()
         self.RIBBONSCALE = self.ui.ribbonWidth.value()
         
-        
         data = []
-        variableRange = []
+        variables = []
         timeCounts  = []
         colors = []
         for (layerGroupName, values) in self.data.iteritems():
@@ -144,7 +134,7 @@ class Viewer(QGLViewer):
             x, y = zip(*values)
             minVal = min(y)
             maxVal = max(y)
-            variableRange.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal})
+            variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal, 'name':layerGroupName})
             data.append(y)
             color = self.mainWidget.colors[QString(layerGroupName)]
             color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
@@ -154,7 +144,7 @@ class Viewer(QGLViewer):
         timeStepCount = max(timeCounts)
         
         #prepare ribbons values
-        quadsPerTimeStep = 1 + self.PRECISION / self.timeStepsPerCycle # At least one quad per time step
+        quadsPerTimeStep = 1 + self.PRECISION # At least one quad per time step
         quadsPerCycle = quadsPerTimeStep * self.timeStepsPerCycle
         cycleCount = float( timeStepCount / self.timeStepsPerCycle )
         #transparency = getMapView().getFadingManager().getTransparency(a)
@@ -169,30 +159,37 @@ class Viewer(QGLViewer):
         glRotatef(90, 0, 1, 0)
         
         quadID = 0
+        self.quadIdInfo = []
         glMatrixMode(GL_MODELVIEW)
         for t in range(0, timeStepCount):
             for j in range(0, quadsPerTimeStep):
                 glPushMatrix()
                 for v in range(0, variablesCount):
-                    try:
-                        #avoid division by 0 and normalizing values to 0-1 range
-                        value = data[v][t]
-                        if variableRange[v]['min'] > 0:
-                            sat = ( value - variableRange[v]['min'] ) / variableRange[v]['range']
+                    #avoid division by 0 and normalizing values to 0-1 range
+                    try: 
+                      value = data[v][t]
+                      if variables[v]['range'] == 0:
+                        sat = 0
+                      else:
+                        if variables[v]['min'] > 0:
+                            sat = ( value - variables[v]['min'] ) / variables[v]['range']
                         else:
-                            sat = ( value + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-                        #add minSaturation
-                        sat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
-                        color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
+                            sat = ( value + math.fabs((variables[v]['min'])) ) / variables[v]['range']
+                      #add minSaturation
+                      adjustedSat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
+                      color = QColor.fromHsvF(colors[v].hueF(), adjustedSat, colors[v].valueF(),1.0)
                     except:
-                        value = None
+                      value = None
+                    
                     #print "Var: ", v, "Time: ", t, " Quad: ", j, '--> ', value    
                     
                     if value is not None:
                       #setOpenGL color
                       glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
                       actualSubRibbonHeight  = subRibbonHeight
-                      self.quadIdInfo.append({'Var':v, 'Time':t, 'Quad': j, 'Value': value} )
+                      self.quadIdInfo.append(\
+                        {'var':v, 'time':t, 'quad': j, 'value': value,\
+                         'varInfos':variables[v], 'ratio':sat} )
                       #start drawing QUADS
                       glPushName(quadID)
                       glBegin(GL_QUADS)
@@ -203,82 +200,42 @@ class Viewer(QGLViewer):
                       glEnd()
                       glPopName()
                       quadID += 1
-                
+                      
                     glTranslatef(0, 0, subRibbonHeight)
                     
                 glPopMatrix()
                 glRotatef(angleStepPerQuad, 0, 0, 1)
                 glTranslatef(0, 0, heightStepPerQuad)
-                
-                
-                
         
-
         # Draw (approximated) intersection point on selected object
         if self.selectedName() >= 0:
-            glColor3f(0.9, 0.2, 0.1)
+            glColor3f(1.0, 1.0, 0.0)
             glBegin(GL_POINTS)
             glVertex3fv(list(self.selectedPoint))
             glEnd()
-    
+
     def postSelection(self,point):
         # Find the selectedPoint coordinates, using camera()->pointUnderPixel().
         self.selectedPoint, found = self.camera().pointUnderPixel(point)
-        self.selectedPoint -= 0.03*self.dir # Small offset to make point clearly visible.
+        self.selectedPoint -= 0.01*Vec() # Small offset to make point clearly visible.
         # Note that "found" is different from (selectedObjectId()>=0) because of the size of the select region.
 
         if self.selectedName() == -1:
-            QMessageBox.information(self, "No selection",
-                 "No object selected under pixel " + str(point.x()) + "," + str(point.y()))
+             self.displayMessage("No object selected under pixel " + str(point.x()) + "," + str(point.y()))
         else:
-            QMessageBox.information(self, "Selection",
-                 #"Spiral number " + str(self.selectedName()) + " selected under pixel " + str(point.x()) + "," + str(point.y())
-                 str(self.quadIdInfo[self.selectedName()])
-                 )
+            info = self.quadIdInfo[self.selectedName()]
+            infoMsg = str(info['varInfos']['name']) + ' @ ' + str(info['time']) +\
+            ':' + str(info['quad']) + ' = ' + str(info['value']) +\
+            ' (range: ' + str(info['varInfos']['min']) + ' - ' + str(info['varInfos']['max']) +\
+            ' -> ' + str(int(info['ratio']*100)) + '%)'
+            self.displayMessage(infoMsg, 5000)
                 
-###OTHER VARIANT                
-#        for v in range(0, variablesCount):
-#            glBegin(GL_QUAD_STRIP)
-#            z=0
-#            for t in range(0, timeStepCount):
-#                angle = angleStepPerQuad * (t/float(timeStepCount))
-#                #angle = math.radians(angle)
-#                try:
-#                    #avoid division by 0 and normalizing values to 0-1 range
-#                    if variableRange[v]['min'] > 0:
-#                        sat = ( data[v][t] - variableRange[v]['min'] ) / variableRange[v]['range']
-#                    else:
-#                        sat = ( data[v][t] + math.fabs((variableRange[v]['min'])) ) / variableRange[v]['range']
-#                        
-#                    #add minSaturation
-#                    sat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
-#                    color = QColor.fromHsvF(colors[v].hueF(), sat, colors[v].valueF(),1.0)
-#                except:
-#                    #color for NODATA
-#                    color = self.nodataColor 
-#               
-#                #setOpenGL color
-#                glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-#                
-#                size = 0.1
-#                
-#                z += size
-#                y = math.cos(angle)
-#                x = math.sin(angle)
-#                
-#                #tl
-#                glVertex3f(x,y,z)
-#                #bl
-#                glVertex3f(x,y,z-size)
-#            glEnd()
-#            glTranslatef(0.0, 0.0, size)
-
-
 
 helpstr = """<h2>Helix V i e w e r</h2>
 Use the mouse to move the camera around the helix. 
 You can respectively revolve around, zoom and translate with the three mouse buttons. 
 Left and middle buttons pressed together rotate around the camera view direction axis<br><br>
+Press SHIFT and left Mouse to get information about the selected time<br/><br/>
 Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, 
 <b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. 
 See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>
@@ -287,6 +244,5 @@ the closer axis with the camera (if close enough). A middle button double click
 fits the zoom of the camera and the right button re-centers the scene.<br><br>
 A left button double click while holding right button pressed defines the camera 
 <i>Revolve Around Point</i>.
-See the <b>Mouse</b> tab and the documentation web pages for details.<br><br>
-Press <b>Escape</b> to exit the viewer."""
+See the <b>Mouse</b> tab and the documentation web pages for details."""
    

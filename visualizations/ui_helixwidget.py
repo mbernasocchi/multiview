@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Mon Mar 28 01:02:06 2011
+# Created: Mon Mar 28 15:46:28 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,6 +45,7 @@ class Ui_HelixWidget(object):
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
         self.ribbonWidth = QtGui.QDoubleSpinBox(HelixWidget)
         self.ribbonWidth.setAccelerated(True)
+        self.ribbonWidth.setMinimum(0.01)
         self.ribbonWidth.setMaximum(1.0)
         self.ribbonWidth.setSingleStep(0.01)
         self.ribbonWidth.setProperty("value", 0.8)
@@ -53,16 +54,14 @@ class Ui_HelixWidget(object):
         self.label_3 = QtGui.QLabel(HelixWidget)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 0, 1, 1, 1)
-        self.precision = QtGui.QDoubleSpinBox(HelixWidget)
-        self.precision.setAccelerated(True)
-        self.precision.setMaximum(1.0)
-        self.precision.setSingleStep(0.01)
-        self.precision.setProperty("value", 0.3)
-        self.precision.setObjectName("precision")
-        self.gridLayout.addWidget(self.precision, 1, 2, 1, 1)
         self.label_5 = QtGui.QLabel(HelixWidget)
         self.label_5.setObjectName("label_5")
         self.gridLayout.addWidget(self.label_5, 0, 2, 1, 1)
+        self.precision = QtGui.QSpinBox(HelixWidget)
+        self.precision.setAccelerated(True)
+        self.precision.setMaximum(50)
+        self.precision.setObjectName("precision")
+        self.gridLayout.addWidget(self.precision, 1, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
 
         self.retranslateUi(HelixWidget)
