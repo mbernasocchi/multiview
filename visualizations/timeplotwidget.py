@@ -82,7 +82,7 @@ class TimePlotWidget(QWidget):
                 x.append(value[0])
                 y.append(value[1])
             
-            color = self.mainWidget.colors[QString(layerGroupName)]
+            color = self.mainWidget.availableVariables[QString(layerGroupName)]['color']
             curve = QwtPlotCurve(layerGroupName)
             pointSize = self.ui.pointSize.value()
             curve.setSymbol(QwtSymbol(QwtSymbol.Ellipse, QBrush(Qt.white), QPen(color), QSize(pointSize,pointSize)))

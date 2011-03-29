@@ -110,13 +110,13 @@ class MultiViewWidget(QDialog):
         
     def redraw(self, recalculateBonds=True):
         if len(self.activatedVariables) is 0:
-            self.ui.warningDisplay.setText("<font color='red'>please select at least a variable</font>")
+            self.showWarning("Please select at least a variable")
             self.selectedVisualization.reset()
         elif self.coords is None:
-            self.ui.warningDisplay.setText("<font color='red'>Please click on the map canvas to select coordinates</font>")
+            self.showWarning("Please click on the map canvas to select coordinates")
             self.selectedVisualization.reset()
         else:
-            self.ui.warningDisplay.setText("")
+            self.resetWarnings()
             self.selectedVisualization.redraw(self.drill(), recalculateBonds)
         
     def drill(self):
@@ -239,7 +239,7 @@ class MultiViewWidget(QDialog):
     def updateAvailableVariables(self):
         if not self.main.isLoadingTemporalData:
             #clear the colors dictionary
-            self.colors = {}
+            self.availableVariables = {}
     
             #remove the old checkboxes
             try:
@@ -250,7 +250,7 @@ class MultiViewWidget(QDialog):
             except:
                 pass
     
-            #count temporal groups
+            #count temporal groups needed to assign evenly distributed colors
             groupsCount = 0
             for layerGroupName in self.legend.groups():
                 if self.hasTemporalRasters(layerGroupName):
@@ -261,14 +261,17 @@ class MultiViewWidget(QDialog):
             for layerGroupName in self.legend.groups():
                 if self.hasTemporalRasters(layerGroupName):
                     #create a legend color
-                    self.colors[layerGroupName] = QColor.fromHsv( int(360 / groupsCount * i), 255, 255 )
+                    color = QColor.fromHsv( int(360 / groupsCount * i), 255, 255 )
                     
                     #create the checkbox label
                     text = QString(layerGroupName)
+                    duration = 0
                     for name,duration in self.main.stepDurations.iteritems():
                         if text.contains(name):
                             text = text.replace(name, " - ("+str(duration)+" s)")
                             break
+                    
+                    self.availableVariables[layerGroupName] = {'readableName':text, 'color':color, 'duration':duration }
                     
                     #create the checkbox  
                     cb = QCheckBox(text)
@@ -278,11 +281,21 @@ class MultiViewWidget(QDialog):
                     isOn = layerGroupName in self.activatedVariables 
                     cb.setChecked(bool(isOn))
                     #color the checkbox
-                    cb.setStyleSheet("background-color: rgb(" + str(self.colors[layerGroupName].red()) + ", " 
-                                    + str(self.colors[layerGroupName].green()) + ", " + str(self.colors[layerGroupName].blue()) + ");\n")
+                    cb.setStyleSheet("background-color: rgb(" 
+                                    + str(self.availableVariables[layerGroupName]['color'].red()) + ", " 
+                                    + str(self.availableVariables[layerGroupName]['color'].green()) + ", " 
+                                    + str(self.availableVariables[layerGroupName]['color'].blue()) + ");\n")
                     self.ui.availableVariables.addWidget(cb)
                     i += 1
-                
+    
+    def showWarning(self, text):
+        #self.ui.warningLabel.setVisible(True)
+        self.ui.warningDisplay.setText("<font color='red'>"+str(text)+"</font>")
+    
+    def resetWarnings(self):
+        #self.ui.warningLabel.setVisible(False)
+        self.ui.warningDisplay.setText("<font color='green'>None</font>")
+        
     def updateSelectedVisualization(self, index):
         self.selectedVisualization = self.visualizations[index]
         self.redraw(True)

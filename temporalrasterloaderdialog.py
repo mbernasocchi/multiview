@@ -174,8 +174,7 @@ class TemporalRasterLoaderDialog(QDialog):
         self.files = QFileDialog.getOpenFileNames(
                          self,
                          "Select temporal rasters to load",
-                         #QDir.homePath (),
-                         "/home/marco/master/data/wallisWGS/testData",
+                         QDir.homePath (),
                          "GDAL files (*.dem *.tif *.tiff *.jpg *.jpeg *.asc);;All files (*.*)")
         self.loadTemporalRasters()
     

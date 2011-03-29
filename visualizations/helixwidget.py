@@ -21,6 +21,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math
+import fractions
 
 try:
     from PyQGLViewer import *
@@ -86,6 +87,7 @@ class Viewer(QGLViewer):
         QGLViewer.__init__(self)
         
         #INIT
+        self.main = parent.main
         self.mainWidget = parent.mainWidget
         self.ui = parent.ui
         self.rawdata = None
@@ -97,31 +99,96 @@ class Viewer(QGLViewer):
         self.TIMESTEPSPERCYCLE = 7
         self.HEIGHT = self.TIMESTEPSPERCYCLE*2
         
-        
         #prevent saving the state on exit
         self.setStateFileName(QString())
         #lighting
         glDisable(GL_LIGHTING)
-        
+        #set the scene to fit the helix and make the helix rotate arount it's middle
         self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
         self.setSceneRadius(self.HEIGHT/2.5)
         self.showEntireScene()
 
     def helpString(self):
+        '''Returns the help string for the help dialog'''
         return helpstr
         
     def setData(self, rawdata):
+        '''Set new raw data and call a repaint'''
         self.rawdata = rawdata
+        if self.rawdata is not None:
+            #find the greatest Common Divisor of the time step units of the selected variables
+            durations = []
+            for (layerGroupName, values) in self.rawdata.iteritems():
+                layerGroupName = QString(layerGroupName)
+                d = self.mainWidget.availableVariables[layerGroupName]['duration']
+                if d not in durations:
+                  durations.append(d)
+            self.timeUnit = self.greatestCommonDivisor(durations)
+            
+            self.hasMultipleGranularity = False
+            print durations
+            if len(durations) > 1:
+                self.hasMultipleGranularity = True
+                self.mainWidget.showWarning("Multiple temporal resolutions Data. See help for details")
+            
+            self.data = []
+            self.times = []
+            self.variables = []
+            self.colors = []
+            timeCounts  = []
+            for (layerGroupName, values) in self.rawdata.iteritems():
+                layerGroupName = QString(layerGroupName)
+                timeCounts.append(len(values))
+                print layerGroupName
+                
+                res = [None] * (24+1)
+                for t,v in values:
+                    i = t/self.timeUnit
+                    res[i] = v
+                print res
+                    
+                    
+                    
+                    
+                x, y = zip(*values)
+                print y
+                minVal = min(y)
+                maxVal = max(y)
+                self.variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal,
+                                       'name':self.mainWidget.availableVariables[layerGroupName]['readableName']})
+                self.data.append(y)
+                self.times.append(x)
+                color = self.mainWidget.availableVariables[layerGroupName]['color']
+                color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
+                self.colors.append(color)
+            
+            self.variablesCount = len(self.rawdata)
+            self.timeStepCount = max(timeCounts)
         self.updateGL()
         
+    def greatestCommonDivisor(self, values):
+        '''Calculates the greatest common divisor of a list'''
+        if len(values) == 1:
+            return values[0]
+        else:
+            gcd = fractions.gcd(values[0], values[1])
+            
+            for i in range(2, len(values)):
+                gcd = fractions.gcd( gcd, values[i] )
+                if gcd == 1:
+                    break
+            return gcd
+    
     def draw(self):
+        '''Drawing routine wrapper'''
+         # Draw Helix
         self.drawWithNames()
         
     def drawWithNames(self):
         '''Drawing routine'''
-        # Draw Helix
-        if (self.rawdata == None):
+        if self.rawdata is None:
             return
+        glMatrixMode(GL_MODELVIEW)
         
         #SETTINGS from GUI:
         self.PRECISION = self.ui.precision.value()
@@ -129,35 +196,14 @@ class Viewer(QGLViewer):
         self.RIBBONSCALE = self.ui.ribbonWidth.value()
         self.TEXTOFFSET  = self.ui.textOffset.value()
         
-        data = []
-        times = []
-        variables = []
-        timeCounts  = []
-        colors = []
-        for (layerGroupName, values) in self.rawdata.iteritems():
-            timeCounts.append(len(values))
-            print values
-            x, y = zip(*values)
-            minVal = min(y)
-            maxVal = max(y)
-            variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal, 'name':layerGroupName})
-            data.append(y)
-            times.append(x)
-            color = self.mainWidget.colors[QString(layerGroupName)]
-            color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
-            colors.append(color)
-        
-        variablesCount = len(self.rawdata)
-        timeStepCount = max(timeCounts)
-        
         #prepare ribbons values
         quadsPerTimeStep = 1 + self.PRECISION # At least one quad per time step
         quadsPerCycle = quadsPerTimeStep * self.TIMESTEPSPERCYCLE
-        cycleCount = float( timeStepCount / self.TIMESTEPSPERCYCLE )
+        cycleCount = float( self.timeStepCount / self.TIMESTEPSPERCYCLE )
         #transparency = getMapView().getFadingManager().getTransparency(a)
         ribbonHeight = self.HEIGHT / (1 + cycleCount)
-        subRibbonHeight = ribbonHeight * self.RIBBONSCALE / variablesCount
-        heightStepPerQuad = (self.HEIGHT - ribbonHeight) / (timeStepCount * quadsPerTimeStep)
+        subRibbonHeight = ribbonHeight * self.RIBBONSCALE / self.variablesCount
+        heightStepPerQuad = (self.HEIGHT - ribbonHeight) / (self.timeStepCount * quadsPerTimeStep)
         angleStepPerQuad = 360.0 / quadsPerCycle
         sin = float( math.sin(angleStepPerQuad * math.pi / 180) )
         cos = float( (-1 * math.cos(angleStepPerQuad * math.pi / 180)) )
@@ -167,17 +213,15 @@ class Viewer(QGLViewer):
         
         quadID = 0
         self.quadIdInfo = []
-        glMatrixMode(GL_MODELVIEW)
-        
-        for t in range(0, timeStepCount):
+        for t in range(0, self.timeStepCount):
             #print time labels
             if (t % self.TIMESTEPSPERCYCLE == 0 ) or \
              (t % self.TIMESTEPSPERCYCLE == self.TIMESTEPSPERCYCLE/2):
                 self.qglColor(self.foregroundColor())
                 time = QDateTime(self.mainWidget.timeMin)
-                for v in range(0, variablesCount):
+                for v in range(0, self.variablesCount):
                     try:
-                        time = time.addSecs(times[v][t])
+                        time = time.addSecs(self.times[v][t])
                         break
                     except:
                       pass
@@ -186,20 +230,20 @@ class Viewer(QGLViewer):
             
             for j in range(0, quadsPerTimeStep):
                 glPushMatrix()
-                for v in range(0, variablesCount):
+                for v in range(0, self.variablesCount):
                     #avoid division by 0 and normalizing values to 0-1 range
                     try: 
-                      value = data[v][t]
-                      if variables[v]['range'] == 0:
+                      value = self.data[v][t]
+                      if self.variables[v]['range'] == 0:
                         sat = 0
                       else:
-                        if variables[v]['min'] > 0:
-                            sat = ( value - variables[v]['min'] ) / variables[v]['range']
+                        if self.variables[v]['min'] > 0:
+                            sat = ( value - self.variables[v]['min'] ) / self.variables[v]['range']
                         else:
-                            sat = ( value + math.fabs((variables[v]['min'])) ) / variables[v]['range']
+                            sat = ( value + math.fabs((self.variables[v]['min'])) ) / self.variables[v]['range']
                       #add minSaturation
                       adjustedSat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
-                      color = QColor.fromHsvF(colors[v].hueF(), adjustedSat, colors[v].valueF(),1.0)
+                      color = QColor.fromHsvF(self.colors[v].hueF(), adjustedSat, self.colors[v].valueF(),1.0)
                     except:
                       value = None
                     
@@ -208,7 +252,7 @@ class Viewer(QGLViewer):
                       self.qglColor(color)
                       self.quadIdInfo.append(\
                         {'var':v, 'time':t, 'quad': j, 'value': value,\
-                         'varInfos':variables[v], 'ratio':sat} )
+                         'varInfos':self.variables[v], 'ratio':sat} )
                       #start drawing QUADS
                       glPushName(quadID)
                       glBegin(GL_QUADS)
@@ -225,8 +269,9 @@ class Viewer(QGLViewer):
                 glPopMatrix()
                 glRotatef(angleStepPerQuad, 0, 0, 1)
                 glTranslatef(0, 0, heightStepPerQuad)
-       
+        
     def postSelection(self,point):
+        '''Executed after a selection has been made in the plot'''
         # Find the selectedPoint coordinates, using camera()->pointUnderPixel().
         self.selectedPoint, found = self.camera().pointUnderPixel(point)
         
@@ -244,15 +289,18 @@ class Viewer(QGLViewer):
 helpstr = """<h2>Helix V i e w e r</h2>
 Use the mouse to move the camera around the helix. 
 You can respectively revolve around, zoom and translate with the three mouse buttons. 
-Left and middle buttons pressed together rotate around the camera view direction axis<br><br>
+Left and middle buttons pressed together rotate around the camera view direction axis<br/><br/>
 Press SHIFT and left Mouse to get information about the selected time<br/><br/>
 Press <b>F</b> to display the frame rate, <b>A</b> for the world axis, 
 <b>Alt+Return</b> for full screen mode and <b>Control+S</b> to save a snapshot. 
-See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br><br>
+See the <b>Keyboard</b> tab in this window for a complete shortcut list.<br/><br/>
 Double clicks automates single click actions: A left button double click aligns 
 the closer axis with the camera (if close enough). A middle button double click 
-fits the zoom of the camera and the right button re-centers the scene.<br><br>
+fits the zoom of the camera and the right button re-centers the scene.<br/><br/>
 A left button double click while holding right button pressed defines the camera 
 <i>Revolve Around Point</i>.
-See the <b>Mouse</b> tab and the documentation web pages for details."""
+See the <b>Mouse</b> tab and the documentation web pages for details.
+<h3>Warnings</h3>
+<ul><li>Multiple temporal resolutions Data:<br/>The variables selected have different temporal resolutions.
+Data with lower resolution (longer interval between each sample) have been extrapolated from the TODO"""
    

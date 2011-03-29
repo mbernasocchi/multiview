@@ -29,6 +29,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
           <string>Enable Variables:</string>
          </property>
@@ -51,7 +57,7 @@
             <x>0</x>
             <y>0</y>
             <width>251</width>
-            <height>199</height>
+            <height>188</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -145,6 +151,22 @@
           </layout>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="warningLabel">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Warnings:</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
