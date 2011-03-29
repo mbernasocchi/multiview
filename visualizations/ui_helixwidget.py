@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Mon Mar 28 15:46:28 2011
+# Created: Tue Mar 29 02:02:04 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,16 +56,31 @@ class Ui_HelixWidget(object):
         self.gridLayout.addWidget(self.label_3, 0, 1, 1, 1)
         self.label_5 = QtGui.QLabel(HelixWidget)
         self.label_5.setObjectName("label_5")
-        self.gridLayout.addWidget(self.label_5, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_5, 0, 3, 1, 1)
         self.precision = QtGui.QSpinBox(HelixWidget)
         self.precision.setAccelerated(True)
         self.precision.setMaximum(50)
         self.precision.setObjectName("precision")
-        self.gridLayout.addWidget(self.precision, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.precision, 1, 3, 1, 1)
+        self.textOffset = QtGui.QDoubleSpinBox(HelixWidget)
+        self.textOffset.setAccelerated(True)
+        self.textOffset.setMaximum(10.0)
+        self.textOffset.setSingleStep(0.01)
+        self.textOffset.setProperty("value", 0.3)
+        self.textOffset.setObjectName("textOffset")
+        self.gridLayout.addWidget(self.textOffset, 1, 2, 1, 1)
+        self.label_4 = QtGui.QLabel(HelixWidget)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout.addWidget(self.label_4, 0, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
 
         self.retranslateUi(HelixWidget)
         QtCore.QMetaObject.connectSlotsByName(HelixWidget)
+        HelixWidget.setTabOrder(self.unitPerCycle, self.sizePerCycle)
+        HelixWidget.setTabOrder(self.sizePerCycle, self.minSaturation)
+        HelixWidget.setTabOrder(self.minSaturation, self.ribbonWidth)
+        HelixWidget.setTabOrder(self.ribbonWidth, self.textOffset)
+        HelixWidget.setTabOrder(self.textOffset, self.precision)
 
     def retranslateUi(self, HelixWidget):
         HelixWidget.setWindowTitle(QtGui.QApplication.translate("HelixWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
@@ -75,5 +90,6 @@ class Ui_HelixWidget(object):
         self.label.setText(QtGui.QApplication.translate("HelixWidget", "per cycle:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("HelixWidget", "Min value color saturation:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("HelixWidget", "Ribbon width:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("HelixWidget", "Helix roundness", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("HelixWidget", "Helix roundness:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("HelixWidget", "Text offset:", None, QtGui.QApplication.UnicodeUTF8))
 

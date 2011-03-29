@@ -69,6 +69,10 @@ class HelixWidget(QWidget):
     def on_minSaturation_valueChanged(self, value):
         self.mainWidget.redraw(False)
     
+    @pyqtSlot(float)
+    def on_textOffset_valueChanged(self, value):
+        self.mainWidget.redraw(False)
+    
     @pyqtSlot(int)
     def on_precision_valueChanged(self, value):
         self.mainWidget.redraw(False)
@@ -84,14 +88,14 @@ class Viewer(QGLViewer):
         #INIT
         self.mainWidget = parent.mainWidget
         self.ui = parent.ui
-        self.data = None
+        self.rawdata = None
     
     
     def init(self):
         """OpenGL init, happens only once"""
         
-        self.timeStepsPerCycle = 5
-        self.HEIGHT = self.timeStepsPerCycle*2
+        self.TIMESTEPSPERCYCLE = 7
+        self.HEIGHT = self.TIMESTEPSPERCYCLE*2
         
         
         #prevent saving the state on exit
@@ -102,13 +106,12 @@ class Viewer(QGLViewer):
         self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
         self.setSceneRadius(self.HEIGHT/2.5)
         self.showEntireScene()
-        
 
     def helpString(self):
         return helpstr
         
-    def setData(self, data):
-        self.data = data
+    def setData(self, rawdata):
+        self.rawdata = rawdata
         self.updateGL()
         
     def draw(self):
@@ -117,36 +120,40 @@ class Viewer(QGLViewer):
     def drawWithNames(self):
         '''Drawing routine'''
         # Draw Helix
-        if (self.data == None):
+        if (self.rawdata == None):
             return
         
         #SETTINGS from GUI:
         self.PRECISION = self.ui.precision.value()
         self.MINSATURATION = self.ui.minSaturation.value()
         self.RIBBONSCALE = self.ui.ribbonWidth.value()
+        self.TEXTOFFSET  = self.ui.textOffset.value()
         
         data = []
+        times = []
         variables = []
         timeCounts  = []
         colors = []
-        for (layerGroupName, values) in self.data.iteritems():
+        for (layerGroupName, values) in self.rawdata.iteritems():
             timeCounts.append(len(values))
+            print values
             x, y = zip(*values)
             minVal = min(y)
             maxVal = max(y)
             variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal, 'name':layerGroupName})
             data.append(y)
+            times.append(x)
             color = self.mainWidget.colors[QString(layerGroupName)]
             color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
             colors.append(color)
         
-        variablesCount = len(self.data)
+        variablesCount = len(self.rawdata)
         timeStepCount = max(timeCounts)
         
         #prepare ribbons values
         quadsPerTimeStep = 1 + self.PRECISION # At least one quad per time step
-        quadsPerCycle = quadsPerTimeStep * self.timeStepsPerCycle
-        cycleCount = float( timeStepCount / self.timeStepsPerCycle )
+        quadsPerCycle = quadsPerTimeStep * self.TIMESTEPSPERCYCLE
+        cycleCount = float( timeStepCount / self.TIMESTEPSPERCYCLE )
         #transparency = getMapView().getFadingManager().getTransparency(a)
         ribbonHeight = self.HEIGHT / (1 + cycleCount)
         subRibbonHeight = ribbonHeight * self.RIBBONSCALE / variablesCount
@@ -161,7 +168,22 @@ class Viewer(QGLViewer):
         quadID = 0
         self.quadIdInfo = []
         glMatrixMode(GL_MODELVIEW)
+        
         for t in range(0, timeStepCount):
+            #print time labels
+            if (t % self.TIMESTEPSPERCYCLE == 0 ) or \
+             (t % self.TIMESTEPSPERCYCLE == self.TIMESTEPSPERCYCLE/2):
+                self.qglColor(self.foregroundColor())
+                time = QDateTime(self.mainWidget.timeMin)
+                for v in range(0, variablesCount):
+                    try:
+                        time = time.addSecs(times[v][t])
+                        break
+                    except:
+                      pass
+                time = time.toString('dd MM yy hh:mm:ss')
+                self.renderText(0, -1-self.TEXTOFFSET, 0, time)
+            
             for j in range(0, quadsPerTimeStep):
                 glPushMatrix()
                 for v in range(0, variablesCount):
@@ -181,12 +203,9 @@ class Viewer(QGLViewer):
                     except:
                       value = None
                     
-                    #print "Var: ", v, "Time: ", t, " Quad: ", j, '--> ', value    
-                    
                     if value is not None:
                       #setOpenGL color
-                      glColor4f(color.redF(),color.greenF(),color.blueF(),color.alphaF())
-                      actualSubRibbonHeight  = subRibbonHeight
+                      self.qglColor(color)
                       self.quadIdInfo.append(\
                         {'var':v, 'time':t, 'quad': j, 'value': value,\
                          'varInfos':variables[v], 'ratio':sat} )
@@ -194,8 +213,8 @@ class Viewer(QGLViewer):
                       glPushName(quadID)
                       glBegin(GL_QUADS)
                       glVertex3f(0, -1, 0)
-                      glVertex3f(0, -1, actualSubRibbonHeight)
-                      glVertex3f(sin, cos, actualSubRibbonHeight + heightStepPerQuad)
+                      glVertex3f(0, -1, subRibbonHeight)
+                      glVertex3f(sin, cos, subRibbonHeight + heightStepPerQuad)
                       glVertex3f(sin, cos, heightStepPerQuad)
                       glEnd()
                       glPopName()
@@ -206,20 +225,11 @@ class Viewer(QGLViewer):
                 glPopMatrix()
                 glRotatef(angleStepPerQuad, 0, 0, 1)
                 glTranslatef(0, 0, heightStepPerQuad)
-        
-        # Draw (approximated) intersection point on selected object
-        if self.selectedName() >= 0:
-            glColor3f(1.0, 1.0, 0.0)
-            glBegin(GL_POINTS)
-            glVertex3fv(list(self.selectedPoint))
-            glEnd()
-
+       
     def postSelection(self,point):
         # Find the selectedPoint coordinates, using camera()->pointUnderPixel().
         self.selectedPoint, found = self.camera().pointUnderPixel(point)
-        self.selectedPoint -= 0.01*Vec() # Small offset to make point clearly visible.
-        # Note that "found" is different from (selectedObjectId()>=0) because of the size of the select region.
-
+        
         if self.selectedName() == -1:
              self.displayMessage("No object selected under pixel " + str(point.x()) + "," + str(point.y()))
         else:

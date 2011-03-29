@@ -103,14 +103,14 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
+     <item row="0" column="3">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Helix roundness</string>
+        <string>Helix roundness:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
+     <item row="1" column="3">
       <widget class="QSpinBox" name="precision">
        <property name="accelerated">
         <bool>true</bool>
@@ -120,10 +120,41 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="textOffset">
+       <property name="accelerated">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <double>10.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.300000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Text offset:</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>unitPerCycle</tabstop>
+  <tabstop>sizePerCycle</tabstop>
+  <tabstop>minSaturation</tabstop>
+  <tabstop>ribbonWidth</tabstop>
+  <tabstop>textOffset</tabstop>
+  <tabstop>precision</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
