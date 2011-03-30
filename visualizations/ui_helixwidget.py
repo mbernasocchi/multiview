@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Wed Mar 30 08:52:14 2011
+# Created: Wed Mar 30 21:03:20 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,17 +96,19 @@ class Ui_HelixWidget(object):
     def retranslateUi(self, HelixWidget):
         HelixWidget.setWindowTitle(QtGui.QApplication.translate("HelixWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         HelixWidget.setToolTip(QtGui.QApplication.translate("HelixWidget", "Pres H for help", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("HelixWidget", "Interpolation for multiple temporal resolutions:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_6.setText(QtGui.QApplication.translate("HelixWidget", "Interpolation for multiple temporal resolutions", None, QtGui.QApplication.UnicodeUTF8))
         self.interpolationMethod.setItemText(0, QtGui.QApplication.translate("HelixWidget", "Linear", None, QtGui.QApplication.UnicodeUTF8))
         self.interpolationMethod.setItemText(1, QtGui.QApplication.translate("HelixWidget", "Nearest Neighbor", None, QtGui.QApplication.UnicodeUTF8))
         self.interpolationMethod.setItemText(2, QtGui.QApplication.translate("HelixWidget", "Previous Value", None, QtGui.QApplication.UnicodeUTF8))
         self.interpolationMethod.setItemText(3, QtGui.QApplication.translate("HelixWidget", "None", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("HelixWidget", "Cycle duration:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("HelixWidget", "Cycle duration", None, QtGui.QApplication.UnicodeUTF8))
         self.unitPerCycle.setItemText(0, QtGui.QApplication.translate("HelixWidget", "Day(s)", None, QtGui.QApplication.UnicodeUTF8))
         self.unitPerCycle.setItemText(1, QtGui.QApplication.translate("HelixWidget", "Year(s)", None, QtGui.QApplication.UnicodeUTF8))
         self.unitPerCycle.setItemText(2, QtGui.QApplication.translate("HelixWidget", "Second(s)", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("HelixWidget", "Min value color saturation:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("HelixWidget", "Ribbon width:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("HelixWidget", "Helix roundness:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("HelixWidget", "Text offset:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("HelixWidget", "Min value color saturation", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3.setText(QtGui.QApplication.translate("HelixWidget", "Ribbon width", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setToolTip(QtGui.QApplication.translate("HelixWidget", "Increase this to make the helix look rounder. Increasing this excessively renders the Helix slow", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5.setText(QtGui.QApplication.translate("HelixWidget", "Helix roundness<img src=\":/plugins/multiview/images/info.png\" />", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4.setText(QtGui.QApplication.translate("HelixWidget", "Text offset", None, QtGui.QApplication.UnicodeUTF8))
 
+import resources_rc

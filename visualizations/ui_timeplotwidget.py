@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_timeplotwidget.ui'
 #
-# Created: Tue Mar 22 17:24:59 2011
+# Created: Wed Mar 30 20:58:34 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_TimePlotWidget(object):
     def setupUi(self, TimePlotWidget):
         TimePlotWidget.setObjectName("TimePlotWidget")
-        TimePlotWidget.resize(474, 458)
+        TimePlotWidget.resize(474, 459)
         self.verticalLayout = QtGui.QVBoxLayout(TimePlotWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.qwtPlot = QwtPlot(TimePlotWidget)
@@ -75,7 +75,7 @@ class Ui_TimePlotWidget(object):
         TimePlotWidget.setWindowTitle(QtGui.QApplication.translate("TimePlotWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.zoomButton.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "Zoom in/out the plot", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("TimePlotWidget", "Point size", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("TimePlotWidget", "Line width:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("TimePlotWidget", "Line width", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "Offset for the start of the dash pattern", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("TimePlotWidget", "Dash offset", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setToolTip(QtGui.QApplication.translate("TimePlotWidget", "use an array in this format: [dash, space, dash, space,...]", None, QtGui.QApplication.UnicodeUTF8))

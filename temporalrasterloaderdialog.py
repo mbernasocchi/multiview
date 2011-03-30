@@ -20,6 +20,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtXml import QXmlSimpleReader, QXmlInputSource
 from qgis.core import *
 from qgis.gui import *
 import re
@@ -53,8 +54,11 @@ class TemporalRasterLoaderDialog(QDialog):
             self.main.isLoadingTemporalData = True
             self.ui.saveLogButton.setEnabled(False)
             self.ui.dataVisible.setEnabled(False)
+            dir = QFileInfo(self.files[0]).absoluteDir().absolutePath()
+            usingHeaderFile, layersStartDatetime = self.parseHeaderFile(dir)
             
             i = 0.0
+            
             importStartTime = QDateTime.currentDateTime()
             self.printToResult("NEW IMPORT RUN\nStart: " + importStartTime.toString(self.timeFormat))
             
@@ -65,7 +69,10 @@ class TemporalRasterLoaderDialog(QDialog):
             #re to remove all non digit
             onlyDigits = re.compile(r'[^\d]+')
             
-            layersStartDatetime = self.ui.startDatetime.dateTime()
+            if not usingHeaderFile:
+                if not importStartTime.isValid():
+                    layersStartDatetime = self.ui.startDatetime.dateTime()
+
             addedGroups = []
             
             for filePath in self.files:
@@ -109,10 +116,12 @@ class TemporalRasterLoaderDialog(QDialog):
                     
                 #createLayer
                 layer = QgsRasterLayer(filePath, fileBaseName)
+                layerTime = layerTime.toString(self.timeFormat)
                 #set time properties
                 layer.setCustomProperty("isTemporalRaster", True)
                 layer.setCustomProperty("temporalRasterIteration", layerName)
-                layer.setCustomProperty("temporalRasterTime", layerTime.toString(self.timeFormat))
+                layer.setCustomProperty("temporalRasterTime", layerTime)
+                layer.setTransparency(127)
                 
                 #set symbology to pseudocolors
                 layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
@@ -123,7 +132,7 @@ class TemporalRasterLoaderDialog(QDialog):
                     layer = QgsMapLayerRegistry.instance().addMapLayer(layer)
                     self.legend.setLayerVisible(layer, False)
                     layerWasAdded = "OK" if bool(layer) else "ERROR"
-                    self.printToResult("Adding : " + fileBaseName + " -> " + layerWasAdded)
+                    self.printToResult("Adding : " + fileBaseName + " with time: "+ layerTime +" -> " + layerWasAdded)
                     
                     #get the current group index
                     groups = []
@@ -160,7 +169,32 @@ class TemporalRasterLoaderDialog(QDialog):
                 self.main.multiviewwidget.refreshAll()
             except:
                 pass
+    
+    def parseHeaderFile(self, dir):
+        useHeader = QMessageBox.question(self, "Header file found", "The Header file importHeader.xml has been found in the import directory, do you want to use it instead of the manually entered informations?",
+         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+
+        if useHeader == QMessageBox.Yes:
+            #TODO implement a real method
+            self.main.stepDurations[QString('S0002')] = 864000
+            self.main.stepDurations[QString('S0003')] = 86400
+            self.main.stepDurations[QString('S0004')] = 14400
+            return True, self.ui.startDatetime.dateTime()
+        return False, False
         
+        #file = QFile(dir+"/importHeader.xml")
+        #xmlReader = QXmlSimpleReader()
+        #source = QXmlInputSource(file)
+        #handler = Handler()
+        #xmlReader.setContentHandler(handler)
+        #xmlReader.setErrorHandler(handler)
+        #ok = xmlReader.parse(source)
+
+        #if not ok:
+            #return (False, False)
+        #self.main.stepDurations[stepDurationText] = stepDuration
+        #return (True, layersStartDatetime)
+
     def printToResult(self, text):
         if self.ui.results.toPlainText().isEmpty():
             self.ui.results.setText(text)

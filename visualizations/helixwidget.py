@@ -28,7 +28,9 @@ try:
     from PyQGLViewer import *
     from OpenGL.GL import *
 except:
-    raise ImportError("PyQGLViewer needed for this visualization \nplease get it at http://pyqglviewer.gforge.inria.fr")
+    raise ImportError("PyQGLViewer needed for this visualization \n\
+		please get it at:\n\
+		http://hub.qgis.org/projects/multiview/documents")
 
 from ui_helixwidget import Ui_HelixWidget
 
