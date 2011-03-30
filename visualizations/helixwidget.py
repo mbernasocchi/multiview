@@ -138,6 +138,7 @@ class Viewer(QGLViewer):
             #is filled with None.
             #the elements in the first-last range are interpolated linearly
             for (layerGroupName, values) in self.rawdata.iteritems():
+                print layerGroupName
                 layerGroupName = QString(layerGroupName)
                 
                 data = [None] * (self.timeStepCount+1)
@@ -147,8 +148,11 @@ class Viewer(QGLViewer):
                 isFirstStep = True
                 for t,v in values:
                     #divide the timestep value by the greatest common divisor
-                    i = t/self.timeUnit
-                    data[i] = v
+                    timeStep = t/self.timeUnit
+                    #insert existing point into the array
+                    data[timeStep] = v
+                    rawdata = list(data)
+                    #update layerGroupName min and max
                     if v < minVal:
                         minVal = v
                     if v > maxVal:
@@ -157,25 +161,39 @@ class Viewer(QGLViewer):
                         isFirstStep = False
                     else:
                         interpolatedV = None
-                        for j in range(lastI, i):
-                            #TODO interpolations
-                            #if self.ui.interpolationMethod.currentText() == 'Linear':
-                                #interpolatedV = abs(lastV - v)/i*(j-lastI)+lastV
-                            if self.ui.interpolationMethod.currentText() == 'Previous Value':
+                        for j in range(lastTimeStep, timeStep):
+                            #number of interpolation steps needed
+                            #+1 so the last step is different from the next timeStep
+                            steps = timeStep+1
+                            #+1 so that the counter starts from 1
+                            step = j+1
+                            if lastTimeStep is not 0:
+                                #normalize value to 1 - lastTimeStep
+                                steps = steps - lastTimeStep
+                                step = step - lastTimeStep
+                                
+                            if self.ui.interpolationMethod.currentText() == 'Linear':
+                                delta = v - lastV
+                                deltaStep = delta / steps
+                                interpolatedV = lastV + deltaStep * step
+                                
+                            elif self.ui.interpolationMethod.currentText() == 'Previous Value':
                                 interpolatedV = lastV
-                            #elif self.ui.interpolationMethod.currentText() == 'Nearest Neighbor':
-                                #if j < (i-lastI)/2:
-                                    #interpolatedV = lastV
-                                #else:
-                                    #interpolatedV = v
+                            elif self.ui.interpolationMethod.currentText() == 'Nearest Neighbor':
+                                if step <= steps/2:
+                                    interpolatedV = lastV
+                                else:
+                                    interpolatedV = v
                             elif self.ui.interpolationMethod.currentText() == 'None':
                                 interpolatedV = None
                             
-                            data[j] = interpolatedV
-                            print 'i: ', i,  data[i], 'j: ',j, data[j]
-                    lastI = i
+                            if data[j] is None:
+                                data[j] = interpolatedV
+                            #print lastV, v, steps, step, interpolatedV
+                    lastTimeStep = timeStep
                     lastV = v
-                    
+                print rawdata
+                print data    
                 self.variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal,
                                        'name':self.mainWidget.availableVariables[layerGroupName]['readableName']})
                 self.data.append(data)
@@ -185,8 +203,14 @@ class Viewer(QGLViewer):
                 self.colors.append(color)
             
             self.variablesCount = len(self.rawdata)
-        
-            self.TIMESTEPSPERCYCLE = self.ui.sizePerCycle.value() / self.timeUnit
+            
+            unitMultiplier = 1 #seconds
+            if self.ui.unitPerCycle.currentText() == 'Day(s)':
+                                unitMultiplier = 86400#60*60*24
+            elif self.ui.unitPerCycle.currentText() == 'Years(s)':
+                                unitMultiplier = 31557600#60*60*24*365.25
+            
+            self.TIMESTEPSPERCYCLE = float(self.ui.sizePerCycle.value() * unitMultiplier) / float(self.timeUnit)
             self.HEIGHT = self.TIMESTEPSPERCYCLE*2
             #set the scene to fit the helix and make the helix rotate arount it's middle
             self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
@@ -254,7 +278,7 @@ class Viewer(QGLViewer):
                     except:
                       pass
                 time = time.toString('dd MM yy hh:mm:ss')
-                #self.renderText(0, -1-self.TEXTOFFSET, 0, time)
+                self.renderText(0, -1-self.TEXTOFFSET, 0, time)
             
             for j in range(0, quadsPerTimeStep):
                 glPushMatrix()

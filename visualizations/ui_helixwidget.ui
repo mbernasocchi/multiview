@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
+    <width>549</width>
     <height>325</height>
    </rect>
   </property>
@@ -19,7 +19,61 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="0">
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Interpolation for multiple temporal resolutions:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QComboBox" name="interpolationMethod">
+       <item>
+        <property name="text">
+         <string>Linear</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nearest Neighbor</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Previous Value</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>None</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QSpinBox" name="sizePerCycle">
+       <property name="accelerated">
+        <bool>true</bool>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>99999999</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Cycle duration:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QComboBox" name="unitPerCycle">
        <item>
         <property name="text">
@@ -31,45 +85,9 @@
          <string>Year(s)</string>
         </property>
        </item>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>per cycle:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QSpinBox" name="sizePerCycle">
-       <property name="accelerated">
-        <bool>true</bool>
-       </property>
-       <property name="maximum">
-        <number>99999999</number>
-       </property>
-       <property name="value">
-        <number>3600</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Interpolation for multiple temporal resolutions:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="interpolationMethod">
        <item>
         <property name="text">
-         <string>Previous Value</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>None</string>
+         <string>Second(s)</string>
         </property>
        </item>
       </widget>
@@ -172,7 +190,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>unitPerCycle</tabstop>
   <tabstop>minSaturation</tabstop>
   <tabstop>ribbonWidth</tabstop>
   <tabstop>textOffset</tabstop>
