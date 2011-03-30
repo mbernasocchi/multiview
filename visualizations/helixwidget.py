@@ -138,7 +138,6 @@ class Viewer(QGLViewer):
             #is filled with None.
             #the elements in the first-last range are interpolated linearly
             for (layerGroupName, values) in self.rawdata.iteritems():
-                print layerGroupName
                 layerGroupName = QString(layerGroupName)
                 
                 data = [None] * (self.timeStepCount+1)
@@ -151,7 +150,7 @@ class Viewer(QGLViewer):
                     timeStep = t/self.timeUnit
                     #insert existing point into the array
                     data[timeStep] = v
-                    rawdata = list(data)
+                    #rawdata = list(data)
                     #update layerGroupName min and max
                     if v < minVal:
                         minVal = v
@@ -176,7 +175,7 @@ class Viewer(QGLViewer):
                                 delta = v - lastV
                                 deltaStep = delta / steps
                                 interpolatedV = lastV + deltaStep * step
-                                print lastV, v, delta, deltaStep, interpolatedV
+                                #print lastV, v, delta, deltaStep, interpolatedV
                                 
                             elif self.ui.interpolationMethod.currentText() == 'Previous Value':
                                 interpolatedV = lastV
@@ -191,11 +190,10 @@ class Viewer(QGLViewer):
                             
                             if data[j] is None:
                                 data[j] = interpolatedV
-                            #print lastV, v, steps, step, interpolatedV
                     lastTimeStep = timeStep
                     lastV = v
-                print rawdata
-                print data    
+                #print rawdata
+                #print data    
                 self.variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal,
                                        'name':self.mainWidget.availableVariables[layerGroupName]['readableName']})
                 self.data.append(data)
