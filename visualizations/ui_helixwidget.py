@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Tue Mar 29 02:02:04 2011
+# Created: Wed Mar 30 02:01:32 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,22 +15,31 @@ class Ui_HelixWidget(object):
         HelixWidget.resize(528, 325)
         self.verticalLayout = QtGui.QVBoxLayout(HelixWidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName("gridLayout_2")
         self.unitPerCycle = QtGui.QComboBox(HelixWidget)
         self.unitPerCycle.setObjectName("unitPerCycle")
         self.unitPerCycle.addItem("")
         self.unitPerCycle.addItem("")
-        self.horizontalLayout.addWidget(self.unitPerCycle)
+        self.gridLayout_2.addWidget(self.unitPerCycle, 2, 0, 1, 1)
         self.label = QtGui.QLabel(HelixWidget)
         self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
+        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
         self.sizePerCycle = QtGui.QSpinBox(HelixWidget)
         self.sizePerCycle.setAccelerated(True)
-        self.sizePerCycle.setMaximum(99999)
+        self.sizePerCycle.setMaximum(99999999)
+        self.sizePerCycle.setProperty("value", 3600)
         self.sizePerCycle.setObjectName("sizePerCycle")
-        self.horizontalLayout.addWidget(self.sizePerCycle)
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.gridLayout_2.addWidget(self.sizePerCycle, 1, 0, 1, 1)
+        self.label_6 = QtGui.QLabel(HelixWidget)
+        self.label_6.setObjectName("label_6")
+        self.gridLayout_2.addWidget(self.label_6, 0, 1, 1, 1)
+        self.interpolationMethod = QtGui.QComboBox(HelixWidget)
+        self.interpolationMethod.setObjectName("interpolationMethod")
+        self.interpolationMethod.addItem("")
+        self.interpolationMethod.addItem("")
+        self.gridLayout_2.addWidget(self.interpolationMethod, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout_2)
         self.gridLayout = QtGui.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.minSaturation = QtGui.QDoubleSpinBox(HelixWidget)
@@ -76,8 +85,7 @@ class Ui_HelixWidget(object):
 
         self.retranslateUi(HelixWidget)
         QtCore.QMetaObject.connectSlotsByName(HelixWidget)
-        HelixWidget.setTabOrder(self.unitPerCycle, self.sizePerCycle)
-        HelixWidget.setTabOrder(self.sizePerCycle, self.minSaturation)
+        HelixWidget.setTabOrder(self.unitPerCycle, self.minSaturation)
         HelixWidget.setTabOrder(self.minSaturation, self.ribbonWidth)
         HelixWidget.setTabOrder(self.ribbonWidth, self.textOffset)
         HelixWidget.setTabOrder(self.textOffset, self.precision)
@@ -88,6 +96,9 @@ class Ui_HelixWidget(object):
         self.unitPerCycle.setItemText(0, QtGui.QApplication.translate("HelixWidget", "Day(s)", None, QtGui.QApplication.UnicodeUTF8))
         self.unitPerCycle.setItemText(1, QtGui.QApplication.translate("HelixWidget", "Year(s)", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("HelixWidget", "per cycle:", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_6.setText(QtGui.QApplication.translate("HelixWidget", "Interpolation for multiple temporal resolutions:", None, QtGui.QApplication.UnicodeUTF8))
+        self.interpolationMethod.setItemText(0, QtGui.QApplication.translate("HelixWidget", "Previous Value", None, QtGui.QApplication.UnicodeUTF8))
+        self.interpolationMethod.setItemText(1, QtGui.QApplication.translate("HelixWidget", "None", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("HelixWidget", "Min value color saturation:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("HelixWidget", "Ribbon width:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("HelixWidget", "Helix roundness:", None, QtGui.QApplication.UnicodeUTF8))

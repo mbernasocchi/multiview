@@ -20,6 +20,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import sys
 import math
 import fractions
 
@@ -81,6 +82,12 @@ class HelixWidget(QWidget):
     @pyqtSlot(float)
     def on_ribbonWidth_valueChanged(self, value):
         self.mainWidget.redraw(False)
+        
+    @pyqtSlot(str)
+    def on_interpolationMethod_currentIndexChanged(self, value):
+        self.mainWidget.redraw(False)
+        
+    
     
 class Viewer(QGLViewer):
     def __init__(self, parent):
@@ -95,18 +102,10 @@ class Viewer(QGLViewer):
     
     def init(self):
         """OpenGL init, happens only once"""
-        
-        self.TIMESTEPSPERCYCLE = 7
-        self.HEIGHT = self.TIMESTEPSPERCYCLE*2
-        
         #prevent saving the state on exit
         self.setStateFileName(QString())
         #lighting
         glDisable(GL_LIGHTING)
-        #set the scene to fit the helix and make the helix rotate arount it's middle
-        self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
-        self.setSceneRadius(self.HEIGHT/2.5)
-        self.showEntireScene()
 
     def helpString(self):
         '''Returns the help string for the help dialog'''
@@ -125,45 +124,74 @@ class Viewer(QGLViewer):
                   durations.append(d)
             self.timeUnit = self.greatestCommonDivisor(durations)
             
-            self.hasMultipleGranularity = False
-            print durations
             if len(durations) > 1:
-                self.hasMultipleGranularity = True
                 self.mainWidget.showWarning("Multiple temporal resolutions Data. See help for details")
             
             self.data = []
-            self.times = []
             self.variables = []
             self.colors = []
-            timeCounts  = []
+            self.timeStepCount = self.mainWidget.maxTimeDelta / self.timeUnit
+            
+            #create an array with the same ammount of elements for each variables
+            #if a variable has a lower temporal resolution than another
+            #the array values of the values outside the first-last range 
+            #is filled with None.
+            #the elements in the first-last range are interpolated linearly
             for (layerGroupName, values) in self.rawdata.iteritems():
                 layerGroupName = QString(layerGroupName)
-                timeCounts.append(len(values))
-                print layerGroupName
                 
-                res = [None] * (24+1)
+                data = [None] * (self.timeStepCount+1)
+                minVal = sys.maxint
+                maxVal = -sys.maxint
+                
+                isFirstStep = True
                 for t,v in values:
+                    #divide the timestep value by the greatest common divisor
                     i = t/self.timeUnit
-                    res[i] = v
-                print res
+                    data[i] = v
+                    if v < minVal:
+                        minVal = v
+                    if v > maxVal:
+                        maxVal = v
+                    if isFirstStep == True:
+                        isFirstStep = False
+                    else:
+                        interpolatedV = None
+                        for j in range(lastI, i):
+                            #TODO interpolations
+                            #if self.ui.interpolationMethod.currentText() == 'Linear':
+                                #interpolatedV = abs(lastV - v)/i*(j-lastI)+lastV
+                            if self.ui.interpolationMethod.currentText() == 'Previous Value':
+                                interpolatedV = lastV
+                            #elif self.ui.interpolationMethod.currentText() == 'Nearest Neighbor':
+                                #if j < (i-lastI)/2:
+                                    #interpolatedV = lastV
+                                #else:
+                                    #interpolatedV = v
+                            elif self.ui.interpolationMethod.currentText() == 'None':
+                                interpolatedV = None
+                            
+                            data[j] = interpolatedV
+                            print 'i: ', i,  data[i], 'j: ',j, data[j]
+                    lastI = i
+                    lastV = v
                     
-                    
-                    
-                    
-                x, y = zip(*values)
-                print y
-                minVal = min(y)
-                maxVal = max(y)
                 self.variables.append({'min':minVal, 'max':maxVal, 'range':maxVal-minVal,
                                        'name':self.mainWidget.availableVariables[layerGroupName]['readableName']})
-                self.data.append(y)
-                self.times.append(x)
+                self.data.append(data)
                 color = self.mainWidget.availableVariables[layerGroupName]['color']
+                
                 color = QColor.fromHsvF(color.hueF(), 1.0, color.valueF())
                 self.colors.append(color)
             
             self.variablesCount = len(self.rawdata)
-            self.timeStepCount = max(timeCounts)
+        
+            self.TIMESTEPSPERCYCLE = self.ui.sizePerCycle.value() / self.timeUnit
+            self.HEIGHT = self.TIMESTEPSPERCYCLE*2
+            #set the scene to fit the helix and make the helix rotate arount it's middle
+            self.setSceneCenter(Vec(self.HEIGHT/2,0,0))
+            self.setSceneRadius(self.HEIGHT/2.5)
+            self.showEntireScene()
         self.updateGL()
         
     def greatestCommonDivisor(self, values):
@@ -221,12 +249,12 @@ class Viewer(QGLViewer):
                 time = QDateTime(self.mainWidget.timeMin)
                 for v in range(0, self.variablesCount):
                     try:
-                        time = time.addSecs(self.times[v][t])
+                        time = time.addSecs(t * self.timeUnit)
                         break
                     except:
                       pass
                 time = time.toString('dd MM yy hh:mm:ss')
-                self.renderText(0, -1-self.TEXTOFFSET, 0, time)
+                #self.renderText(0, -1-self.TEXTOFFSET, 0, time)
             
             for j in range(0, quadsPerTimeStep):
                 glPushMatrix()
@@ -240,7 +268,7 @@ class Viewer(QGLViewer):
                         if self.variables[v]['min'] > 0:
                             sat = ( value - self.variables[v]['min'] ) / self.variables[v]['range']
                         else:
-                            sat = ( value + math.fabs((self.variables[v]['min'])) ) / self.variables[v]['range']
+                            sat = ( value + abs((self.variables[v]['min'])) ) / self.variables[v]['range']
                       #add minSaturation
                       adjustedSat =  ( sat + self.MINSATURATION ) / ( 1 + self.MINSATURATION )
                       color = QColor.fromHsvF(self.colors[v].hueF(), adjustedSat, self.colors[v].valueF(),1.0)

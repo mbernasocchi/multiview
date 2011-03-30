@@ -122,6 +122,8 @@ class MultiViewWidget(QDialog):
     def drill(self):
         groups = self.legend.groupLayerRelationship()
         
+        values = {}
+        self.maxTimeDelta = 0
         self.valueMin = sys.maxint
         self.valueMax = -sys.maxint
         self.timeMin = QDateTime()
@@ -153,9 +155,7 @@ class MultiViewWidget(QDialog):
                             
                         elif layerTime < self.timeMin:
                             self.timeMin = layerTime
-                        
         
-        values = {}
         for group in groups:
             groupName = str(group[0])
             groupLayers = group[1]
@@ -175,7 +175,9 @@ class MultiViewWidget(QDialog):
                             iteration = layer.customProperty("temporalRasterIteration").toInt()[0]
                             
                             layerTime = QDateTime.fromString(str(layer.customProperty("temporalRasterTime").toString()), self.main.timeFormat)
-                            timeDelta = self.timeMin.secsTo(layerTime) 
+                            timeDelta = self.timeMin.secsTo(layerTime)
+                            if timeDelta > self.maxTimeDelta:
+                                self.maxTimeDelta = timeDelta
 
                             try:
                                 #skip NODATA
