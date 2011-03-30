@@ -157,16 +157,16 @@ class Viewer(QGLViewer):
                         minVal = v
                     if v > maxVal:
                         maxVal = v
+                    
                     if isFirstStep == True:
                         isFirstStep = False
                     else:
                         interpolatedV = None
                         for j in range(lastTimeStep, timeStep):
                             #number of interpolation steps needed
-                            #+1 so the last step is different from the next timeStep
-                            steps = timeStep+1
+                            steps = timeStep
                             #+1 so that the counter starts from 1
-                            step = j+1
+                            step = j
                             if lastTimeStep is not 0:
                                 #normalize value to 1 - lastTimeStep
                                 steps = steps - lastTimeStep
@@ -176,9 +176,11 @@ class Viewer(QGLViewer):
                                 delta = v - lastV
                                 deltaStep = delta / steps
                                 interpolatedV = lastV + deltaStep * step
+                                print lastV, v, delta, deltaStep, interpolatedV
                                 
                             elif self.ui.interpolationMethod.currentText() == 'Previous Value':
                                 interpolatedV = lastV
+                                
                             elif self.ui.interpolationMethod.currentText() == 'Nearest Neighbor':
                                 if step <= steps/2:
                                     interpolatedV = lastV
@@ -267,6 +269,7 @@ class Viewer(QGLViewer):
         self.quadIdInfo = []
         for t in range(0, self.timeStepCount):
             #print time labels
+            #TODO limit number of labels
             if (t % self.TIMESTEPSPERCYCLE == 0 ) or \
              (t % self.TIMESTEPSPERCYCLE == self.TIMESTEPSPERCYCLE/2):
                 self.qglColor(self.foregroundColor())
