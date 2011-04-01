@@ -43,11 +43,12 @@ class HelixWidget(QWidget):
         self.ui.setupUi(self)
         self.main = main #main plugin file
         self.mainWidget = mainWidget #multiview widget
+        self.warningDisplay = self.ui.warningDisplay
         
         self.viewer = Viewer(self)
         self.viewer.setObjectName("viewer")
         self.viewer.setSizePolicy( QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.ui.verticalLayout.insertWidget(0, self.viewer)
+        self.ui.verticalLayout.insertWidget(1, self.viewer)
         
     def name(self):
         return "Helix"
@@ -128,6 +129,9 @@ class Viewer(QGLViewer):
             
             if len(durations) > 1:
                 self.mainWidget.showWarning("Multiple temporal resolutions Data. See help for details")
+                self.ui.interpolationMethod.setEnabled(True)
+            else:
+                self.ui.interpolationMethod.setEnabled(False)
             
             self.data = []
             self.variables = []
@@ -357,5 +361,5 @@ A left button double click while holding right button pressed defines the camera
 See the <b>Mouse</b> tab and the documentation web pages for details.
 <h3>Warnings</h3>
 <ul><li>Multiple temporal resolutions Data:<br/>The variables selected have different temporal resolutions.
-Data with lower resolution (longer interval between each sample) have been extrapolated from the TODO"""
+The data with lower resolution (longer interval between each sample) are interpolated using the chosen interpolation method"""
    

@@ -70,7 +70,7 @@ class TemporalRasterLoaderDialog(QDialog):
             onlyDigits = re.compile(r'[^\d]+')
             
             if not usingHeaderFile:
-                if not importStartTime.isValid():
+                if not layersStartDatetime.isValid():
                     layersStartDatetime = self.ui.startDatetime.dateTime()
 
             addedGroups = []
@@ -121,7 +121,7 @@ class TemporalRasterLoaderDialog(QDialog):
                 layer.setCustomProperty("isTemporalRaster", True)
                 layer.setCustomProperty("temporalRasterIteration", layerName)
                 layer.setCustomProperty("temporalRasterTime", layerTime)
-                layer.setTransparency(127)
+                #layer.setTransparency(127)
                 
                 #set symbology to pseudocolors
                 layer.setDrawingStyle(QgsRasterLayer.SingleBandPseudoColor)
@@ -171,16 +171,19 @@ class TemporalRasterLoaderDialog(QDialog):
                 pass
     
     def parseHeaderFile(self, dir):
-        useHeader = QMessageBox.question(self, "Header file found", "The Header file importHeader.xml has been found in the import directory, do you want to use it instead of the manually entered informations?",
-         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        #TODO implement header parsing
+        return False, QDateTime()
+        
+        #useHeader = QMessageBox.question(self, "Header file found", "The Header file importHeader.xml has been found in the import directory, do you want to use it instead of the manually entered informations?",
+         #QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
 
-        if useHeader == QMessageBox.Yes:
-            #TODO implement a real method
-            self.main.stepDurations[QString('S0002')] = 864000
-            self.main.stepDurations[QString('S0003')] = 86400
-            self.main.stepDurations[QString('S0004')] = 14400
-            return True, self.ui.startDatetime.dateTime()
-        return False, False
+        #if useHeader == QMessageBox.Yes:
+            ##TODO implement a real method
+            #self.main.stepDurations[QString('S0002')] = 864000
+            #self.main.stepDurations[QString('S0003')] = 86400
+            #self.main.stepDurations[QString('S0004')] = 14400
+            #return True, self.ui.startDatetime.dateTime()
+        #return False, QDateTime()
         
         #file = QFile(dir+"/importHeader.xml")
         #xmlReader = QXmlSimpleReader()
@@ -205,6 +208,7 @@ class TemporalRasterLoaderDialog(QDialog):
     
     @pyqtSlot()
     def on_loadDataButton_clicked(self):
+        self.ui.results.setText("")
         self.files = QFileDialog.getOpenFileNames(
                          self,
                          "Select temporal rasters to load",

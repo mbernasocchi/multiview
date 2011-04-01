@@ -18,6 +18,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="warningDisplay">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="2">
       <widget class="QLabel" name="label_6">
@@ -28,6 +35,9 @@
      </item>
      <item row="1" column="2">
       <widget class="QComboBox" name="interpolationMethod">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <item>
         <property name="text">
          <string>Linear</string>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_timeplotwidget.ui'
 #
-# Created: Wed Mar 30 20:58:34 2011
+# Created: Fri Apr  1 14:05:30 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,6 +15,10 @@ class Ui_TimePlotWidget(object):
         TimePlotWidget.resize(474, 459)
         self.verticalLayout = QtGui.QVBoxLayout(TimePlotWidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.warningDisplay = QtGui.QLabel(TimePlotWidget)
+        self.warningDisplay.setText("")
+        self.warningDisplay.setObjectName("warningDisplay")
+        self.verticalLayout.addWidget(self.warningDisplay)
         self.qwtPlot = QwtPlot(TimePlotWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)

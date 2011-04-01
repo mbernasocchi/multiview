@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Tue Mar 29 21:37:18 2011
+# Created: Fri Apr  1 14:24:49 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,7 +41,7 @@ class Ui_MultiView(object):
         self.availableVariablesContainer.setWidgetResizable(True)
         self.availableVariablesContainer.setObjectName("availableVariablesContainer")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget(self.availableVariablesContainer)
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 188))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 199))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -85,14 +85,6 @@ class Ui_MultiView(object):
         self.buttons.addItem(spacerItem1)
         self.settings.addLayout(self.buttons)
         self.controls.addLayout(self.settings)
-        self.warningLabel = QtGui.QLabel(MultiView)
-        self.warningLabel.setEnabled(True)
-        font = QtGui.QFont()
-        font.setWeight(75)
-        font.setBold(True)
-        self.warningLabel.setFont(font)
-        self.warningLabel.setObjectName("warningLabel")
-        self.controls.addWidget(self.warningLabel)
         self.main.addLayout(self.controls)
         self.visualizations = QtGui.QTabWidget(MultiView)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -105,15 +97,8 @@ class Ui_MultiView(object):
         self.verticalLayout_2.addLayout(self.main)
         self.bottom = QtGui.QHBoxLayout()
         self.bottom.setObjectName("bottom")
-        self.warningDisplay = QtGui.QLabel(MultiView)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.warningDisplay.sizePolicy().hasHeightForWidth())
-        self.warningDisplay.setSizePolicy(sizePolicy)
-        self.warningDisplay.setText("")
-        self.warningDisplay.setObjectName("warningDisplay")
-        self.bottom.addWidget(self.warningDisplay)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.bottom.addItem(spacerItem2)
         self.aboutButton = QtGui.QPushButton(MultiView)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -145,7 +130,6 @@ class Ui_MultiView(object):
         self.manualRefreshButton.setText(QtGui.QApplication.translate("MultiView", "Refresh List", None, QtGui.QApplication.UnicodeUTF8))
         self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.helpButton.setText(QtGui.QApplication.translate("MultiView", "Help", None, QtGui.QApplication.UnicodeUTF8))
-        self.warningLabel.setText(QtGui.QApplication.translate("MultiView", "Warnings:", None, QtGui.QApplication.UnicodeUTF8))
         self.aboutButton.setText(QtGui.QApplication.translate("MultiView", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("MultiView", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -113,7 +113,7 @@ class MultiViewWidget(QDialog):
             self.showWarning("Please select at least a variable")
             self.selectedVisualization.reset()
         elif self.coords is None:
-            self.showWarning("Please click on the map canvas to select coordinates")
+            self.showWarning("Please perform the chosen <b>tracking action</b> on the map canvas to select coordinates")
             self.selectedVisualization.reset()
         else:
             self.resetWarnings()
@@ -191,6 +191,7 @@ class MultiViewWidget(QDialog):
         if values:
             return values
         else:
+            self.showWarning("Coordinates out of boundaries, please track over the data")
             return None
 #    def readProjectActivatedVariables(self):
 #        #init the activated variables list
@@ -292,11 +293,11 @@ class MultiViewWidget(QDialog):
     
     def showWarning(self, text):
         #self.ui.warningLabel.setVisible(True)
-        self.ui.warningDisplay.setText("<font color='red'>"+str(text)+"</font>")
+        self.selectedVisualization.warningDisplay.setText("<font color='red'>"+str(text)+"</font>")
     
     def resetWarnings(self):
         #self.ui.warningLabel.setVisible(False)
-        self.ui.warningDisplay.setText("<font color='green'>None</font>")
+        self.selectedVisualization.warningDisplay.setText("")
         
     def updateSelectedVisualization(self, index):
         self.selectedVisualization = self.visualizations[index]

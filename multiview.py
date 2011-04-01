@@ -53,7 +53,7 @@ class MultiView:
         QObject.connect(self.runAction, SIGNAL("triggered()"), self.run)
         
         self.loadDataAction = QAction(QIcon(":/plugins/multiview/images/icon_loader.png"), \
-            "MultiView Data Loader", self.mainWindow)
+            "Multi Temporal Data Loader", self.mainWindow)
         QObject.connect(self.loadDataAction, SIGNAL("triggered()"), self.loadData)
 
         # Add toolbar button and menu item

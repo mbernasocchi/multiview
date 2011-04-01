@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_helixwidget.ui'
 #
-# Created: Wed Mar 30 21:03:20 2011
+# Created: Fri Apr  1 14:05:30 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,12 +15,17 @@ class Ui_HelixWidget(object):
         HelixWidget.resize(549, 325)
         self.verticalLayout = QtGui.QVBoxLayout(HelixWidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.warningDisplay = QtGui.QLabel(HelixWidget)
+        self.warningDisplay.setText("")
+        self.warningDisplay.setObjectName("warningDisplay")
+        self.verticalLayout.addWidget(self.warningDisplay)
         self.gridLayout_2 = QtGui.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.label_6 = QtGui.QLabel(HelixWidget)
         self.label_6.setObjectName("label_6")
         self.gridLayout_2.addWidget(self.label_6, 0, 2, 1, 1)
         self.interpolationMethod = QtGui.QComboBox(HelixWidget)
+        self.interpolationMethod.setEnabled(False)
         self.interpolationMethod.setObjectName("interpolationMethod")
         self.interpolationMethod.addItem("")
         self.interpolationMethod.addItem("")

@@ -38,6 +38,8 @@ class TimePlotWidget(QWidget):
         self.main = main #main plugin file
         self.mainWidget = mainWidget #multiview widget
         self.plot = self.ui.qwtPlot
+        self.warningDisplay = self.ui.warningDisplay
+        
         self.isFirstRedraw = True
         
         self.picker = TimeScalePicker(
