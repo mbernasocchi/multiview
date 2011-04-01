@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Fri Apr  1 14:24:49 2011
+# Created: Fri Apr  1 15:00:23 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -81,6 +81,9 @@ class Ui_MultiView(object):
         self.helpButton = QtGui.QPushButton(MultiView)
         self.helpButton.setObjectName("helpButton")
         self.buttons.addWidget(self.helpButton)
+        self.vizHelpButton = QtGui.QPushButton(MultiView)
+        self.vizHelpButton.setObjectName("vizHelpButton")
+        self.buttons.addWidget(self.vizHelpButton)
         spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.buttons.addItem(spacerItem1)
         self.settings.addLayout(self.buttons)
@@ -130,6 +133,7 @@ class Ui_MultiView(object):
         self.manualRefreshButton.setText(QtGui.QApplication.translate("MultiView", "Refresh List", None, QtGui.QApplication.UnicodeUTF8))
         self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.helpButton.setText(QtGui.QApplication.translate("MultiView", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.vizHelpButton.setText(QtGui.QApplication.translate("MultiView", "Viz Help", None, QtGui.QApplication.UnicodeUTF8))
         self.aboutButton.setText(QtGui.QApplication.translate("MultiView", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("MultiView", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

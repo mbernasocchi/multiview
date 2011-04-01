@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_stepdurationdialog.ui'
 #
-# Created: Wed Mar 16 10:56:25 2011
+# Created: Fri Apr  1 15:00:22 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!

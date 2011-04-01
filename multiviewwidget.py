@@ -362,7 +362,7 @@ class MultiViewWidget(QDialog):
     @pyqtSlot()
     def on_aboutButton_clicked(self):
         QMessageBox.about(self, 'MultiView - multitemporal/multivariate data viewer', "This Tool allows visualizing multitemporal-multivariate data.\
-        Further vizualisation methods can easily be added.\n\nDeveloper: Marco Bernasocchi [marco@bernawebdesign.ch]" )
+            \nFurther vizualisation methods can easily be added.\n\nDeveloper: Marco Bernasocchi [marco@bernawebdesign.ch]\nURL:http://hub.qgis.org/projects/multiview" )
     
     @pyqtSlot()
     def on_loadDataButton_clicked(self):
@@ -375,8 +375,16 @@ class MultiViewWidget(QDialog):
         self.refreshAll()
         
     @pyqtSlot()
-    def on_helpButton_clicked(self):
+    def on_vizHelpButton_clicked(self):
         self.selectedVisualization.help()
+        
+    @pyqtSlot()
+    def on_helpButton_clicked(self):
+        QMessageBox.information(self, 'MultiView - Help', "This Tool allows visualizing multitemporal-multivariate data.\
+            \nFirst load the multitemporal data using the special loader, then select the temporal resolutions and variables you want to display.\
+            \nFinally perform the action choosen in the tracking menu on the QGis map canvas and the data will be displayed.\
+            \n\nThe refresh list button is only needed when you manually delete a group of layers directlay in the QGis legend.\
+            \n\nFurther help related to each visualization can be found by clicking on the viz help button wihle looking at the visualization you are interested in." )
                 
     @pyqtSlot()
     def on_closeButton_clicked(self):

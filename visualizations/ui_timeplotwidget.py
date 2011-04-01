@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visualizations/ui_timeplotwidget.ui'
 #
-# Created: Fri Apr  1 14:05:30 2011
+# Created: Fri Apr  1 15:00:22 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!

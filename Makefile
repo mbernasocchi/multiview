@@ -19,6 +19,9 @@
 
 # Makefile for a PyQGIS plugin 
 
+PACKAGE_DIR=.
+PACKAGE_NAME=multiview
+
 UI_PATH=.
 UI_SOURCES=$(shell find $(UI_PATH) -name '*.ui')
 UI_FILES=$(patsubst $(UI_PATH)/%.ui, $(UI_PATH)/%.py, $(UI_SOURCES))
@@ -56,5 +59,5 @@ $(RES_FILES): $(RES_PATH)/%_rc.py: $(RES_PATH)/%.qrc
 clean:
 	rm -f $(ALL_FILES)
 
-package:
-	cd .. && rm -f GdalTools.zip && zip -r GdalTools.zip GdalTools -x \*.svn* -x \*.pyc -x \*~ -x \*entries\* -x \*.git\*
+package: clean
+	git archive --format zip --output $(PACKAGE_DIR)/$(PACKAGE_NAME).zip --prefix=$(PACKAGE_NAME)/ master

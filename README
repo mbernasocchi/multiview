@@ -1,1 +1,9 @@
-To implement a new visualization create a new widget like the other visualizations and instantiate it in MultiViewWidget.__init__
+**Installation:
+- PyQT4.Qwt5 (http://pyqwt.sourceforge.net) is needed for timeplot
+- PyQglViewer (http://hub.qgis.org/documents/1) is needed for helix view
+
+**New Visualizations:
+- To implement a new visualization create a new widget like the others.
+- Use rawvaluewidget.py as example, all methods implemented there are required
+- Finally instantiate it in MultiViewWidget.__init__
+- all visualization widgets recive the data as the rawvalue data widget shows

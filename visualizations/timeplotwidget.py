@@ -134,7 +134,8 @@ class TimePlotWidget(QWidget):
         
     def help(self):
          QMessageBox.about(self, 'TimePlot Help', "This plot shows the temporal evoution of multiple variable.\
-         \nClick on the magnify glass to enable the click&drag zoomer" )
+         \nClick on the magnify glass to enable the click&drag zoomer.\
+         \nRight click zooms out again" )
     
     def zoomEnabled(self, on):
         self.zoomer.setEnabled(on)
