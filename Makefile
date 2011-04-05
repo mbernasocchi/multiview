@@ -57,7 +57,7 @@ $(RES_FILES): $(RES_PATH)/%_rc.py: $(RES_PATH)/%.qrc
 
 
 clean:
-	rm -f $(ALL_FILES)
+	#rm -f $(ALL_FILES)
 
 package: clean
 	git archive --format zip --output $(PACKAGE_DIR)/$(PACKAGE_NAME).zip --prefix=$(PACKAGE_NAME)/ master
