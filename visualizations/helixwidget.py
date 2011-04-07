@@ -22,15 +22,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import math
-import fractions
 
 try:
     from PyQGLViewer import *
     from OpenGL.GL import *
+    import fractions
+    dependenciesOK = True
 except:
-    raise ImportError("PyQGLViewer needed for this visualization \n\
-		please get it at:\n\
-		http://hub.qgis.org/projects/multiview/documents")
+    dependenciesOK = False
 
 from ui_helixwidget import Ui_HelixWidget
 
@@ -45,22 +44,37 @@ class HelixWidget(QWidget):
         self.mainWidget = mainWidget #multiview widget
         self.warningDisplay = self.ui.warningDisplay
         
-        self.viewer = Viewer(self)
-        self.viewer.setObjectName("viewer")
-        self.viewer.setSizePolicy( QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.ui.verticalLayout.insertWidget(1, self.viewer)
+        if dependenciesOK:
+            self.viewer = Viewer(self)
+            self.viewer.setObjectName("viewer")
+            self.viewer.setSizePolicy( QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+            self.ui.verticalLayout.insertWidget(1, self.viewer)
+            
         
     def name(self):
         return "Helix"
     
     def redraw(self, valuesArray, recalculateBonds=True):
-        self.viewer.setData(valuesArray)
-        
+        if dependenciesOK:
+            self.viewer.setData(valuesArray)
+        else:
+            self.showDependenciesNotOK()
+            
     def reset(self):
-        self.viewer.setData(None)
+        if dependenciesOK:
+            self.viewer.setData(None)
+        else:
+            self.showDependenciesNotOK()
     
     def help(self):
-        self.viewer.help()
+        if dependenciesOK:
+            self.viewer.help()
+        else:
+            self.showDependenciesNotOK()
+    
+    def showDependenciesNotOK(self):
+        self.mainWidget.showWarning("This visualization requires:\
+        fractions and OpenGL modules and PyQGLViewer (http://hub.qgis.org/projects/multiview/documents)")
         
     @pyqtSlot(int)
     def on_sizePerCycle_valueChanged(self, value):
