@@ -57,7 +57,7 @@
             <x>0</x>
             <y>0</y>
             <width>251</width>
-            <height>199</height>
+            <height>191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -139,6 +139,13 @@
             <widget class="QPushButton" name="vizHelpButton">
              <property name="text">
               <string>Viz Help</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="printButton">
+             <property name="text">
+              <string>Print Viz</string>
              </property>
             </widget>
            </item>

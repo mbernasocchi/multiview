@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Tue Apr  5 11:01:16 2011
+# Created: Mon Apr 11 11:36:05 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,7 +41,7 @@ class Ui_MultiView(object):
         self.availableVariablesContainer.setWidgetResizable(True)
         self.availableVariablesContainer.setObjectName("availableVariablesContainer")
         self.scrollAreaWidgetContents_2 = QtGui.QWidget(self.availableVariablesContainer)
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 199))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 251, 191))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -84,6 +84,9 @@ class Ui_MultiView(object):
         self.vizHelpButton = QtGui.QPushButton(MultiView)
         self.vizHelpButton.setObjectName("vizHelpButton")
         self.buttons.addWidget(self.vizHelpButton)
+        self.printButton = QtGui.QPushButton(MultiView)
+        self.printButton.setObjectName("printButton")
+        self.buttons.addWidget(self.printButton)
         spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.buttons.addItem(spacerItem1)
         self.settings.addLayout(self.buttons)
@@ -134,6 +137,7 @@ class Ui_MultiView(object):
         self.loadDataButton.setText(QtGui.QApplication.translate("MultiView", "Load Data ...", None, QtGui.QApplication.UnicodeUTF8))
         self.helpButton.setText(QtGui.QApplication.translate("MultiView", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.vizHelpButton.setText(QtGui.QApplication.translate("MultiView", "Viz Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.printButton.setText(QtGui.QApplication.translate("MultiView", "Print Viz", None, QtGui.QApplication.UnicodeUTF8))
         self.aboutButton.setText(QtGui.QApplication.translate("MultiView", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.closeButton.setText(QtGui.QApplication.translate("MultiView", "Close", None, QtGui.QApplication.UnicodeUTF8))
 

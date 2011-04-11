@@ -68,6 +68,9 @@ class TimePlotWidget(QWidget):
     
     def name(self):
         return "TimePlot"
+        
+    def canvasWidget(self):
+        return self.plot
     
     def redraw(self, valuesArray, recalculateBonds=True):
         self.reset()

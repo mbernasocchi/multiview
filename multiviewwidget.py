@@ -385,6 +385,16 @@ class MultiViewWidget(QDialog):
             \nFinally perform the action choosen in the tracking menu on the QGis map canvas and the data will be displayed.\
             \n\nThe refresh list button is only needed when you manually delete a group of layers directlay in the QGis legend.\
             \n\nFurther help related to each visualization can be found by clicking on the viz help button wihle looking at the visualization you are interested in." )
+    
+    @pyqtSlot()
+    def on_printButton_clicked(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer)
+        if printDialog.exec_() == QDialog.Accepted:
+            pm = QPixmap.grabWidget(self.selectedVisualization.canvasWidget())
+            p = QPainter(printer)
+            p.drawPixmap(0, 0, pm)
+            p.end()
                 
     @pyqtSlot()
     def on_closeButton_clicked(self):

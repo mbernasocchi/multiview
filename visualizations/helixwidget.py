@@ -54,6 +54,9 @@ class HelixWidget(QWidget):
     def name(self):
         return "Helix"
     
+    def canvasWidget(self):
+        return self.viewer
+    
     def redraw(self, valuesArray, recalculateBonds=True):
         if dependenciesOK:
             self.viewer.setData(valuesArray)
