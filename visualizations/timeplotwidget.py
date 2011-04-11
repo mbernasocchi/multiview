@@ -108,16 +108,12 @@ class TimePlotWidget(QWidget):
         if len(ticks) > 0 and (self.isFirstRedraw or recalculateBonds):
             ticks.sort()
             #update axes
-            div = QwtScaleDiv()
-            div.setInterval(ticks[0], ticks[len(ticks)-1])
-            div.setTicks(QwtScaleDiv.MinorTick, [])
-            div.setTicks(QwtScaleDiv.MediumTick, [])
-            div.setTicks(QwtScaleDiv.MajorTick, ticks)
+            div = QwtScaleDiv(ticks[0], ticks[len(ticks)-1], ticks, [],[])
             baseTime = QDateTime(self.mainWidget.timeMin)
             draw = TimeScaleDraw(baseTime)
-            draw.setScaleDiv(div)
-            #self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
             self.plot.setAxisScaleDraw(QwtPlot.xBottom, draw)
+            self.plot.setAxisScaleDiv(QwtPlot.xBottom, div)
+            
             self.plot.setAxisScale(QwtPlot.yLeft, self.mainWidget.valueMin, self.mainWidget.valueMax)
             
             # reinitialize the scale
