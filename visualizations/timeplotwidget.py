@@ -108,7 +108,10 @@ class TimePlotWidget(QWidget):
         if len(ticks) > 0 and (self.isFirstRedraw or recalculateBonds):
             ticks.sort()
             #update axes
-            div = QwtScaleDiv(ticks[0], ticks[len(ticks)-1], ticks, [],[])
+            div = QwtScaleDiv(ticks[0], ticks[len(ticks)-1], [], [], ticks)
+            #according to http://pyqwt.sourceforge.net/doc5/reference.html#PyQt4.Qwt5.QwtScaleDiv
+            #this line should be (note ticks position, maybe a bug in api?:
+            #div = QwtScaleDiv(ticks[0], ticks[len(ticks)-1], ticks, [], [])
             baseTime = QDateTime(self.mainWidget.timeMin)
             draw = TimeScaleDraw(baseTime)
             self.plot.setAxisScaleDraw(QwtPlot.xBottom, draw)
@@ -165,6 +168,7 @@ class TimeScaleDraw(QwtScaleDraw):
     def __init__(self, baseTime):
         QwtScaleDraw.__init__(self)
         #QTime baseTime
+        print "here"
         self.baseTime = baseTime
         self.setLabelAlignment(Qt.AlignLeft | Qt.AlignBottom)
         self.setLabelRotation(-25.0)

@@ -42,6 +42,8 @@ class RawValueWidget(QWidget):
     def name(self):
         '''Returns the name of the visualization'''
         return "Raw Values"
+    def canvasWidget(self):
+        return self.ui.display
     
     def redraw(self, values, recalculateBonds=True):
         '''Redraws the visualization'''
