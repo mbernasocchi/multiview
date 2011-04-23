@@ -24,7 +24,7 @@ def name():
 def description():
     return "This plugin allows analysis of multi temporal and multivariate datasets"
 def version():
-    return "Version 0.6.4"
+    return "Version 0.6.5"
 def icon():
     return "icon.png"
 def qgisMinimumVersion():

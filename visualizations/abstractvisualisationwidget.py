@@ -18,41 +18,31 @@
  ***************************************************************************/
 """
 
-from abstractvisualisationwidget import AbstractVisualisationWidget
-from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from ui_rawvaluewidget import Ui_RawValueWidget
-
-# This class shows the multiview value in a text box
-class RawValueWidget(AbstractVisualisationWidget):
-    def __init__(self, mainWidget, main):
-        AbstractVisualisationWidget.__init__(self)
-        # Set up the user interface from Designer.
-        self.ui = Ui_RawValueWidget()
-        self.ui.setupUi(self)
-        #main plugin file
-        self.main = main
-        #multiview widget
-        self.mainWidget = mainWidget
-        #this is the label that shows the warnings
-        self.warningDisplay = self.ui.warningDisplay
-    
+# This is an example visualisation class for multi view.
+# Use it as your working base
+# All the methods present here have to exist to make the class working
+class AbstractVisualisationWidget(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        
     def name(self):
         '''Returns the name of the visualization'''
-        return "Raw Values"
+        raise NotImplementedError
         
     def canvasWidget(self):
-        return self.ui.display
+        raise NotImplementedError
     
     def redraw(self, values, recalculateBonds=True):
         '''Redraws the visualization'''
-        self.ui.display.setText(str(values))
+        raise NotImplementedError
         
     def reset(self):
         '''Reset the visualization'''
-        self.ui.display.setText("")
+        raise NotImplementedError
     
     def help(self):
         '''Help about the visualization'''
-        self.ui.display.setText("This widget shows the raw values coming from the data in the form:\
-        \n{'variableID': [(timeInSec, value), (timeInSec, value), ...], ...}")
+        raise NotImplementedError
+        
+        

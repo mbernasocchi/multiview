@@ -18,6 +18,8 @@
  ***************************************************************************/
 """
 
+from abstractvisualisationwidget import AbstractVisualisationWidget
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
@@ -33,10 +35,10 @@ except:
 
 from ui_helixwidget import Ui_HelixWidget
 
-# create the dialog for zoom to point
-class HelixWidget(QWidget):
+# cyclic data visualization class
+class HelixWidget(AbstractVisualisationWidget):
     def __init__(self, mainWidget, main):
-        QWidget.__init__(self)
+        AbstractVisualisationWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_HelixWidget()
         self.ui.setupUi(self)

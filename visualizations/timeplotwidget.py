@@ -18,6 +18,8 @@
  ***************************************************************************/
 """
 
+from abstractvisualisationwidget import AbstractVisualisationWidget
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -28,10 +30,10 @@ except:
     
 from ui_timeplotwidget import Ui_TimePlotWidget
 
-# create the dialog for zoom to point
-class TimePlotWidget(QWidget):
+# pcp like time plot class
+class TimePlotWidget(AbstractVisualisationWidget):
     def __init__(self, mainWidget, main):
-        QWidget.__init__(self)
+        AbstractVisualisationWidget.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_TimePlotWidget()
         self.ui.setupUi(self)
