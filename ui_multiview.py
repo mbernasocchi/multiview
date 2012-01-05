@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiview.ui'
 #
-# Created: Mon Apr 11 11:36:05 2011
+# Created: Sat Apr 23 18:47:50 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
