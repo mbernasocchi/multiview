@@ -72,7 +72,7 @@ class MultiViewWidget(QDialog):
         self.mapTool = PanEmitMapTool(self.mapCanvas)
         self.mapCanvas.setMapTool(self.mapTool)
         self.mapCanvas.setCursor(self.mapTool.cursor)
-        self.ui.trackRightClick.setChecked (True)
+        self.ui.trackMouseMove.setChecked (True)
         
         #create the available variables checkbox group
         self.ui.availableVariablesGroup = QButtonGroup()
